@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: pez-sh
+  namespace: pezsh
+spec:
+  hosts:
+  - pez-sh.london.pez.sh
+  gateways:
+  - istio-system/london-pez-sh
+  http:
+  - route:
+    - destination:
+        host: pez-sh.pezsh.svc.cluster.local

@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  hosts:
+  - grafana.london.pez.sh
+  gateways:
+  - istio-system/london-pez-sh
+  http:
+  - route:
+    - destination:
+        host: grafana.monitoring.svc.cluster.local

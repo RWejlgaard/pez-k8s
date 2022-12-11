@@ -1,0 +1,21 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: grafana-values 
+  namespace: monitoring
+data:
+  values.yaml: |-
+    datasources:
+      datasource.yaml:
+        apiVersion: 1
+        datasources:
+        - name: local
+          type: prometheus
+          url: http://prometheus-server.monitoring.svc.cluster.local
+          access: proxy
+          isDefault: true
+    admin:
+    ## Name of the secret. Can be templated.
+      existingSecret: "grafana-admin-credentials"
+      userKey: admin-user
+      passwordKey: admin-password

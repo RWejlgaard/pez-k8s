@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: prometheus
+  namespace: monitoring
+spec:
+  hosts:
+  - prometheus.london.pez.sh
+  gateways:
+  - istio-system/london-pez-sh
+  http:
+  - route:
+    - destination:
+        host: prometheus-server.monitoring.svc.cluster.local
