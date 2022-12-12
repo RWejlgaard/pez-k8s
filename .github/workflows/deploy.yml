@@ -24,6 +24,8 @@ jobs:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
           KUBE_CONTEXT: pez-london
         run: |
-          cd $GITHUB_WORKSPACE/pez-k8s
-          ./apply.sh
-
+          cd $GITHUB_WORKSPACE 
+          for file in `ls **/*.yaml`
+          do
+            kubectl apply -f $file
+          done
