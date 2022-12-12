@@ -13,6 +13,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Install kubeconfig
+        shell: bash
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: |
+          mkdir -p ~/.kube
+          echo $KUBECONFIG > ~/.kube/config
+
       - name: Install Kubectl
         shell: bash
         run: |
@@ -21,9 +30,6 @@ jobs:
 
       - name: Deploy
         shell: bash
-        env:
-          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
-          KUBE_CONTEXT: pez-london
         run: |
           cd $GITHUB_WORKSPACE 
           for file in `ls **/*.yaml`
