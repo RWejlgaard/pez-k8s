@@ -17,7 +17,7 @@ jobs:
         shell: bash
         run: |
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          mv ./kubectl /usr/local/bin/kubectl
+          mv ./kubectl $GITHUB_WORKSPACE
 
       - name: Deploy
         shell: bash
@@ -28,5 +28,5 @@ jobs:
           cd $GITHUB_WORKSPACE 
           for file in `ls **/*.yaml`
           do
-            kubectl apply -f $file
+            $GITHUB_WORKSPACE/kubectl apply -f $file
           done
