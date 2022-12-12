@@ -19,6 +19,7 @@ All components & services are architecture agnostic and will work on `AMD64`, `A
 Locations:
 
 |Locale|Environment Role|Aproximate total resources|Provider|
+|---|---|---|---|
 |London|`dev`|64 CPUs, 80Gi RAM|Self-managed|
 |Paris|`prod`|8 CPUs, 32Gi RAM|Self-managed|
 |Tokyo|`prod`|1 CPUs, 4Gi RAM|GKE|
