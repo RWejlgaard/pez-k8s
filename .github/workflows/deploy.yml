@@ -1,0 +1,29 @@
+name: Apply Manifests
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Kubectl
+        shell: bash
+        run: |
+          apt update
+          apt install -y kubectl
+
+      - name: Deploy
+        shell: bash
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
+          KUBE_CONTEXT: pez-london
+        run: |
+          cd $GITHUB_WORKSPACE
+          ./apply.sh
+
