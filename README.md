@@ -17,6 +17,7 @@ Each cluster in this project is a mirror of each other (except hardware specific
 All components & services are architecture agnostic and will work on `AMD64`, `ARM64` & `ARMv7`.
 
 Locations:
+
 |Locale|Environment Role|Aproximate total resources|Provider|
 |London|`dev`|64 CPUs, 80Gi RAM|Self-managed|
 |Paris|`prod`|8 CPUs, 32Gi RAM|Self-managed|
