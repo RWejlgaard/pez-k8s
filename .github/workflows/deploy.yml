@@ -18,17 +18,12 @@ jobs:
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
           mv ./kubectl /usr/local/bin/kubectl
 
-      - name: debug list files
-        shell: bash
-        run: |
-          ls $GITHUB_WORKSPACE
-
       - name: Deploy
         shell: bash
         env:
           KUBE_CONFIG: ${{ secrets.KUBECONFIG }}
           KUBE_CONTEXT: pez-london
         run: |
-          cd $GITHUB_WORKSPACE
+          cd $GITHUB_WORKSPACE/pez-k8s
           ./apply.sh
 
