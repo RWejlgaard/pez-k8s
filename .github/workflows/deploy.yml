@@ -15,8 +15,8 @@ jobs:
       - name: Install Kubectl
         shell: bash
         run: |
-          apt update
-          apt install -y kubectl
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          mv ./kubectl /usr/local/bin/kubectl
 
       - name: Deploy
         shell: bash
