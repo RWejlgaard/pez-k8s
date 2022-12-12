@@ -20,7 +20,7 @@ jobs:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
         run: |
           mkdir -p ~/.kube
-          echo $KUBECONFIG > ~/.kube/config
+          echo $KUBECONFIG | base64 -d > ~/.kube/config
 
       - name: Install Kubectl
         shell: bash
