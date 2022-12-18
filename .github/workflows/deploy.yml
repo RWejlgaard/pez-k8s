@@ -31,7 +31,7 @@ jobs:
       - name: Deploy
         shell: bash
         run: |
-          for file in `ls **/*.yaml`
+          for file in `ls **/*.yaml | grep -vE "^virtualservice-host-mutator"`
           do
             echo $file
             ./kubectl apply -f $file
