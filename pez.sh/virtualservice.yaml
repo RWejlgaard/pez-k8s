@@ -3,6 +3,8 @@ kind: VirtualService
 metadata:
   name: pez-sh
   namespace: pezsh
+  labels:
+    virtualservice.pez.sh/mutation: enabled
 spec:
   hosts:
   - pez-sh.london.pez.sh

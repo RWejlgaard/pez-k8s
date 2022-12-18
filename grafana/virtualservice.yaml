@@ -3,6 +3,8 @@ kind: VirtualService
 metadata:
   name: grafana
   namespace: monitoring
+  labels:
+    virtualservice.pez.sh/mutation: enabled
 spec:
   hosts:
   - grafana.london.pez.sh

@@ -1,0 +1,17 @@
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: virtualservice-host-mutator
+  namespace: webhooks
+spec:
+  selector:
+    app: virtualservice-host-mutator
+  type: ClusterIP
+  ports:
+  - name: virtualservice-host-mutator
+    protocol: TCP
+    port: 443
+    targetPort: 8443
+---
+

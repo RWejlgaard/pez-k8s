@@ -3,6 +3,8 @@ kind: VirtualService
 metadata:
   name: prometheus
   namespace: monitoring
+  labels:  
+    virtualservice.pez.sh/mutation: enabled
 spec:
   hosts:
   - prometheus.london.pez.sh
