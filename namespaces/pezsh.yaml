@@ -4,3 +4,4 @@ metadata:
   name: pezsh
   labels:
     istio-injection: enabled
+    virtualservice.pez.sh/mutation: enabled

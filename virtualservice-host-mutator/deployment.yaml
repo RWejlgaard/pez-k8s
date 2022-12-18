@@ -1,0 +1,46 @@
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  virtualservice-host-mutator
+  namespace: webhooks
+  labels:
+    app:  virtualservice-host-mutator
+spec:
+  selector:
+    matchLabels:
+      app: virtualservice-host-mutator
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  virtualservice-host-mutator
+    spec:
+      containers:
+      - name:  virtualservice-host-mutator
+        image:  rwejlgaard/virtualservice-host-mutator:0.0.6
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort:  8443
+          name: webhook
+        volumeMounts:
+        - name: ssl
+          mountPath: "/ssl"
+      restartPolicy: Always
+      volumes:
+      - name: ssl
+        secret:
+          secretName: virtualservice-host-mutator-tls
+
