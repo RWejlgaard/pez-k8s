@@ -8,8 +8,10 @@ metadata:
 spec:
   hosts:
   - pez-sh.london.pez.sh
+  - pez-sh.ovh.pez.sh
   gateways:
   - istio-system/london-pez-sh
+  - istio-system/ovh-pez-sh
   http:
   - route:
     - destination:

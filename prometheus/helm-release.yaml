@@ -13,6 +13,6 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: prometheus
-  valuesFrom:
-  - kind: ConfigMap
-    name: prometheus-values
+  #valuesFrom:
+  #- kind: ConfigMap
+    #name: prometheus-values

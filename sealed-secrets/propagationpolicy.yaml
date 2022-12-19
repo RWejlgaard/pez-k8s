@@ -1,0 +1,19 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: sealed-secrets
+  namespace: sealed-secrets
+spec:
+  resourceSelectors:
+    - apiVersion: source.toolkit.fluxcd.io/v1beta2 
+      kind: HelmRepository
+      name: sealed-secrets
+    - apiVersion: helm.toolkit.fluxcd.io/v2beta1
+      kind: HelmRelease
+      name: sealed-secrets
+    - apiVersion: v1
+      kind: ConfigMap
+      name: sealed-secrets-values
+  placement:
+    clusterAffinity:
+      clusterNames: []
