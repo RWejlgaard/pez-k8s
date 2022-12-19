@@ -1,0 +1,8 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: sealed-secrets-values 
+  namespace: sealed-secrets
+data:
+  values.yaml: |-
+    secretName: sealed-secrets-key

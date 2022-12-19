@@ -1,0 +1,19 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: pezsh-policy
+  namespace: pezsh
+spec:
+  resourceSelectors:
+    - apiVersion: apps/v1 
+      kind: Deployment
+      name: pez-sh
+    - apiVersion: v1
+      kind: Service
+      name: pez-sh
+    - apiVersion: networking.istio.io/v1beta1
+      kind: VirtualService
+      name: pez-sh
+  placement:
+    clusterAffinity:
+      clusterNames: []

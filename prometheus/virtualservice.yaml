@@ -3,13 +3,13 @@ kind: VirtualService
 metadata:
   name: prometheus
   namespace: monitoring
-  labels:  
-    virtualservice.pez.sh/mutation: enabled
 spec:
   hosts:
   - prometheus.london.pez.sh
+  - prometheus.ovh.pez.sh
   gateways:
   - istio-system/london-pez-sh
+  - istio-system/ovh-pez-sh
   http:
   - route:
     - destination:

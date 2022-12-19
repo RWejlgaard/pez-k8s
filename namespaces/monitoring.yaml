@@ -4,4 +4,3 @@ metadata:
   name: monitoring
   labels:
     istio-injection: enabled
-    virtualservice.pez.sh/mutation: enabled
