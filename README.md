@@ -22,25 +22,36 @@ Locations:
 |---|---|---|---|
 |London|`dev`|64 CPUs, 80Gi RAM|Self-managed|
 |Paris|`prod`|8 CPUs, 32Gi RAM|Self-managed|
-|Tokyo|`prod`|1 CPUs, 4Gi RAM|GKE|
+|~Tokyo~|~`prod`~|~1 CPUs, 4Gi RAM~|~GKE~|
 
-Load balancing is handled via Cloudflare, each "region" is setup as an origin. Cloudflare will automatically route the client to the origin with the lowest latency.
+Load balancing is handled via Cloudflare, each "region" is set up as an origin. Cloudflare will automatically route the client to the origin with the lowest latency.
 
 ## Components
 
 ### System Components
 
-|Component|Description|
-|---|---|
-|Istio|Personal service-mesh of choice, directs traffic and provides mutual TLS and workload to workload auth|
-|Prometheus|Collecting metrics from all services and other system-components|
-|Grafana|Provides pretty dashboards|
-|Sealed Secrets|Provides CRD to take in encrypted secrets, so I can upload secrets to GitHub|
-|FluxCD|Provides CRDs for helm management|
-|Karmada|Helm chart federation to other regions (NOT IMPLEMENTED)|
+|Component|Status|Description|
+|---|---|---|
+|Istio|Implemented|Personal service-mesh of choice, directs traffic and provides mutual TLS and workload to workload auth|
+|Prometheus|Implemented|Collecting metrics from all services and other system-components|
+|Grafana|Implemented|Provides pretty dashboards|
+|Sealed Secrets|Implemented|Provides CRD to take in encrypted secrets, so I can upload secrets to GitHub|
+|FluxCD|Implemented|Provides CRDs for helm management|
+|Karmada|Implemented|Helm chart federation to other regions|
 
 #### Planned
 
 * Datadog-agent (When I find budget)
+
+### Workloads
+
+|Workload|Status|Description|
+|---|---|---|
+|Pez.sh|Added|Personal website|
+|Plex|Planned|Movie & TV-Show streaming|
+|Radarr|Planned|Movie torrent management|
+|Sonarr|Planned|TV Show torrent management|
+|Home Assistant|Planned|Automation of smart home appliances|
+
 
 
