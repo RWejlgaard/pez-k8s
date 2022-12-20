@@ -1,0 +1,13 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: istio-operator
+  namespace: istio-system
+spec:
+  resourceSelectors:
+    - apiVersion: install.istio.io/v1alpha1
+      kind: IstioOperator
+      name: operator
+  placement:
+    clusterAffinity:
+      clusterNames: []
