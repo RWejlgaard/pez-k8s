@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: copenhagen-pez-sh
+  namespace: istio-system
+spec:
+  servers:
+  - hosts:
+    - '*'
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+    tls:
+      httpsRedirect: true
+  - hosts:
+    - '*'
+    port:
+      name: https-443
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: wild-copenhagen-tls
+      mode: SIMPLE

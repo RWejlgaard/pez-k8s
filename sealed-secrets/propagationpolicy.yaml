@@ -5,6 +5,9 @@ metadata:
   namespace: sealed-secrets
 spec:
   resourceSelectors:
+    - apiVersion: v1
+      kind: Secret
+      name: sealed-secrets-key
     - apiVersion: source.toolkit.fluxcd.io/v1beta2 
       kind: HelmRepository
       name: sealed-secrets

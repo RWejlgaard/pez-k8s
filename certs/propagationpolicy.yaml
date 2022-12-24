@@ -1,0 +1,19 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: certificates
+  namespace: istio-system
+spec:
+  resourceSelectors:
+    - apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      name: wild-london-tls
+    - apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      name: wild-paris-tls
+    - apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      name: wild-copenhagen-tls
+  placement:
+    clusterAffinity:
+      clusterNames: []
