@@ -1,19 +1,45 @@
 apiVersion: policy.karmada.io/v1alpha1
 kind: PropagationPolicy
 metadata:
-  name: gateways
+  name: london-gateway
   namespace: istio-system
 spec:
   resourceSelectors:
     - apiVersion: networking.istio.io/v1beta1
       kind: Gateway
       name: london-pez-sh
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - pez-london
+---
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: paris-gateway
+  namespace: istio-system
+spec:
+  resourceSelectors:
     - apiVersion: networking.istio.io/v1beta1
       kind: Gateway
       name: paris-pez-sh
+  placement:
+    clusterAffinity:
+      clusterNames:
+        - pez-paris
+---
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: copenhagen-gateway
+  namespace: istio-system
+spec:
+  resourceSelectors:
     - apiVersion: networking.istio.io/v1beta1
       kind: Gateway
       name: copenhagen-pez-sh
   placement:
     clusterAffinity:
-      clusterNames: []
+      clusterNames:
+        - pez-copenhagen
+---
