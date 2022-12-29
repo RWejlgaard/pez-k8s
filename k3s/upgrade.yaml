@@ -8,7 +8,7 @@ spec:
   version: v1.25.5-rc3+k3s1
   nodeSelector:
     matchExpressions:
-      - key: k3s-upgrade
+      - key: kubernetes.io/arch # All nodes
         operator: Exists
   serviceAccountName: system-upgrade
   drain:

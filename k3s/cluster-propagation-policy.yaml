@@ -1,0 +1,24 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: ClusterPropagationPolicy
+metadata:
+  name: system-upgrade-controller
+spec:
+  placement:
+    clusterAffinity:
+      clusterNames: []
+  resourceSelectors:
+    - apiVersion: v1
+      kind: Namespace
+      name: system-upgrade
+    - apiVersion: v1
+      kind: ServiceAccount
+      name: system-upgrade
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      name: system-upgrade
+    - apiVersion: v1
+      kind: ConfigMap
+      name: default-controller-env
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: system-upgrade-controller
