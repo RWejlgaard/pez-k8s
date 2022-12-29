@@ -20,5 +20,5 @@ spec:
       number: 443
       protocol: HTTPS
     tls:
-      credentialName: wild-paris-tls
+      credentialName: wild-global-tls
       mode: SIMPLE
