@@ -7,13 +7,7 @@ spec:
   resourceSelectors:
     - apiVersion: bitnami.com/v1alpha1
       kind: SealedSecret
-      name: wild-london-tls
-    - apiVersion: bitnami.com/v1alpha1
-      kind: SealedSecret
-      name: wild-paris-tls
-    - apiVersion: bitnami.com/v1alpha1
-      kind: SealedSecret
-      name: wild-copenhagen-tls
+      name: wild-global-tls
   placement:
     clusterAffinity:
       clusterNames: []
