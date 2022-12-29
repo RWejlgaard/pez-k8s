@@ -1,0 +1,13 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: k3s-upgrade-latest
+  namespace: system-upgrade
+spec:
+  resourceSelectors:
+    - apiVersion: upgrade.cattle.io/v1
+      kind: Plan
+      name: k3s-latest
+  placement:
+    clusterAffinity:
+      clusterNames: []
