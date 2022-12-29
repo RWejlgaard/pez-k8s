@@ -18,11 +18,11 @@ All components & services are architecture agnostic and will work on `AMD64`, `A
 
 Locations:
 
-|Locale|Environment Role|Aproximate total resources|Provider|
+|Location|Aproximate total resources|Provider|
 |---|---|---|---|
-|London|`dev`|64 CPUs, 80Gi RAM|Self-managed|
-|Paris|`prod`|8 CPUs, 32Gi RAM|Self-managed|
-|~Tokyo~|~`prod`~|~1 CPUs, 4Gi RAM~|~GKE~|
+|London|64 CPUs, 80Gi RAM|Self-managed|
+|Paris|8 CPUs, 32Gi RAM|Self-managed|
+|Copenhagen|16 CPUs, 32Gi RAM|Self-managed|
 
 Load balancing is handled via Cloudflare, each "region" is set up as an origin. Cloudflare will automatically route the client to the origin with the lowest latency.
 
@@ -38,6 +38,7 @@ Load balancing is handled via Cloudflare, each "region" is set up as an origin. 
 |Sealed Secrets|Implemented|Provides CRD to take in encrypted secrets, so I can upload secrets to GitHub|
 |FluxCD|Implemented|Provides CRDs for helm management|
 |Karmada|Implemented|Helm chart federation to other regions|
+|Rancher Upgrade Controller|Implemented|Automates node upgrades|
 
 #### Planned
 
