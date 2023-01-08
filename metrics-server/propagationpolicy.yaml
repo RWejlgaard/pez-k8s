@@ -1,0 +1,16 @@
+apiVersion: policy.karmada.io/v1alpha1
+kind: PropagationPolicy
+metadata:
+  name: metrics-server
+  namespace: monitoring
+spec:
+  resourceSelectors:
+    - apiVersion: source.toolkit.fluxcd.io/v1beta2 
+      kind: HelmRepository
+      name: metrics-server
+    - apiVersion: helm.toolkit.fluxcd.io/v2beta1
+      kind: HelmRelease
+      name: metrics-server
+  placement:
+    clusterAffinity:
+      clusterNames: []
