@@ -1,12 +1,13 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: prometheus
+  name: grafana
   namespace: monitoring
 spec:
   hosts:
-  - prometheus.london.pez.sh
-  - prometheus.paris.pez.sh
+  - grafana.london.pez.sh
+  - grafana.paris.pez.sh
+  - grafana.copenhagen.pez.sh
   gateways:
   - istio-system/london-pez-sh
   - istio-system/paris-pez-sh
@@ -14,4 +15,4 @@ spec:
   http:
   - route:
     - destination:
-        host: prometheus-server.monitoring.svc.cluster.local
+        host: kube-prometheus-stack-grafana.monitoring.svc.cluster.local
