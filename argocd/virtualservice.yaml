@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  hosts:
+  - argocd.london.pez.sh
+  - argocd.paris.pez.sh
+  - argocd.copenhagen.pez.sh
+  gateways:
+  - istio-system/london-pez-sh
+  - istio-system/paris-pez-sh
+  - istio-system/copenhagen-pez-sh
+  
+  http:
+  - route:
+    - destination:
+        host: argocd-server.argocd.svc.cluster.local
