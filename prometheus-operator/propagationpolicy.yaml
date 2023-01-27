@@ -17,6 +17,12 @@ spec:
     - apiVersion: networking.istio.io/v1beta1
       kind: VirtualService
       name: prometheus
+    - apiVersion: networking.istio.io/v1beta1
+      kind: VirtualService
+      name: grafana
+    - apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      name: kube-prometheus-stack-grafana
   placement:
     clusterAffinity:
       clusterNames: []
