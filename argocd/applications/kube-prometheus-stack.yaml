@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus-operator
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  ignoreDifferences:
+  - group: v1
+    kind: Secret
+    jsonPointers:
+    - /data/admin-password
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - RespectIgnoreDifferences=true
+      - Replace=true
+  source:
+    chart: kube-prometheus-stack
+    repoURL: https://prometheus-community.github.io/helm-charts
+    targetRevision: 44.3.0
+    helm:
+      releaseName: kube-prometheus-stack
+      values: |
+        prometheusOperator:
+          admissionWebhooks:
+            enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring

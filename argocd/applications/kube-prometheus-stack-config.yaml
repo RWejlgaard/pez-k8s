@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: pez-sh
+  name: prometheus-operator-config
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -11,12 +11,9 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
   source:
     repoURL: https://github.com/rwejlgaard/pez-k8s.git
     targetRevision: argocd-migration
-    path: pez.sh/.
+    path: prometheus-operator/.
   destination:
     server: https://kubernetes.default.svc
-    namespace: pezsh
