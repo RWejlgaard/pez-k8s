@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: certs
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  source:
+    repoURL: https://github.com/rwejlgaard/pez-k8s.git
+    targetRevision: argocd-migration
+    path: certs/.
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
