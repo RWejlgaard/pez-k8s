@@ -17,7 +17,7 @@ spec:
       - CreateNamespace=true
   source:
     repoURL: https://github.com/rwejlgaard/pez-k8s.git
-    targetRevision: argocd-migration
+    targetRevision: HEAD
     path: pez.sh/.
   destination:
     server: https://kubernetes.default.svc
