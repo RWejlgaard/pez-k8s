@@ -1,10 +1,8 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: namespaces
+  name: pez-k8s
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -16,6 +14,7 @@ spec:
   source:
     repoURL: https://github.com/rwejlgaard/pez-k8s.git
     targetRevision: argocd-migration
-    path: namespaces/.
+    path: argocd/applications/.
   destination:
     server: https://kubernetes.default.svc
+    namespace: argocd
