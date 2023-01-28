@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy
+    name: Deploy pez-k8s
     runs-on: ubuntu-latest
 
     steps:
@@ -31,8 +31,4 @@ jobs:
       - name: Deploy
         shell: bash
         run: |
-          for file in `ls **/*.yaml | grep -vE "^(virtualservice-host-mutator|k3s)"`
-          do
-            echo $file
-            ./kubectl apply -f $file
-          done
+          ./kubectl apply -f argocd/pez-k8s.yaml
