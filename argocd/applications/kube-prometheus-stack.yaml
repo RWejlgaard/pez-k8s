@@ -6,18 +6,12 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  ignoreDifferences:
-  - group: v1
-    kind: Secret
-    jsonPointers:
-    - /data/admin-password
   project: default
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - RespectIgnoreDifferences=true
       - Replace=true
   source:
     chart: kube-prometheus-stack
@@ -29,6 +23,11 @@ spec:
         prometheusOperator:
           admissionWebhooks:
             enabled: false
+        grafana:
+          admin:
+            existingSecret: "grafana-admin-credentials"
+            userKey: admin-user
+            passwordKey: admin-password
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
