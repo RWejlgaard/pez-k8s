@@ -20,7 +20,10 @@ jobs:
           KUBECONFIG: ${{ secrets.KUBECONFIG }}
         run: |
           mkdir -p ~/.kube
-          echo $KUBECONFIG | base64 -d > ~/.kube/config
+          echo $KUBECONFIG_COPENHAGEN | base64 -d > ~/.kube/copenhagen
+          echo $KUBECONFIG_LONDON | base64 -d > ~/.kube/london
+          echo $KUBECONFIG_PARIS | base64 -d > ~/.kube/paris
+
 
       - name: Install Kubectl
         shell: bash
@@ -31,4 +34,6 @@ jobs:
       - name: Deploy
         shell: bash
         run: |
-          ./kubectl apply -f argocd/pez-k8s.yaml
+          ./kubectl apply --kubeconfig ~/.kube/copenhagen -f argocd/pez-k8s.yaml
+          ./kubectl apply --kubeconfig ~/.kube/london -f argocd/pez-k8s.yaml
+          ./kubectl apply --kubeconfig ~/.kube/paris -f argocd/pez-k8s.yaml
