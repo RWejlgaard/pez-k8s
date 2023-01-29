@@ -20,8 +20,8 @@ Locations:
 
 |Location|Aproximate total resources|Provider|
 |---|---|---|
-|London|64 CPUs, 80Gi RAM|Self-managed|
-|Paris|8 CPUs, 32Gi RAM|Self-managed|
+|London|76 CPUs, 104Gi RAM|Self-managed|
+|Paris|16 CPUs, 96Gi RAM|Self-managed|
 |Copenhagen|16 CPUs, 32Gi RAM|Self-managed|
 
 Load balancing is handled via Cloudflare, each "region" is set up as an origin. Cloudflare will automatically route the client to the origin with the lowest latency.
@@ -33,11 +33,11 @@ Load balancing is handled via Cloudflare, each "region" is set up as an origin. 
 |Component|Status|Description|
 |---|---|---|
 |Istio|Implemented|Personal service-mesh of choice, directs traffic and provides mutual TLS and workload to workload auth|
-|Prometheus|Implemented|Collecting metrics from all services and other system-components|
-|Grafana|Implemented|Provides pretty dashboards|
+|Prometheus-operator|Implemented|Collecting metrics from all services and other system-components|
+|Metrics Server|Implemented|Collecting metrics of the clusters|
+|Grafana|Implemented|Provides pretty dashboards (part of prometheus-operator)|
 |Sealed Secrets|Implemented|Provides CRD to take in encrypted secrets, so I can upload secrets to GitHub|
-|FluxCD|Implemented|Provides CRDs for helm management|
-|Karmada|Implemented|Helm chart federation to other regions|
+|ArgoCD|Implemented|GitOps management and UI|
 |Rancher Upgrade Controller|Implemented|Automates node upgrades|
 
 #### Planned
@@ -54,5 +54,7 @@ Load balancing is handled via Cloudflare, each "region" is set up as an origin. 
 |Sonarr|Planned|TV Show torrent management|
 |Home Assistant|Planned|Automation of smart home appliances|
 
+# Architecure Diagram
 
+![diagram](docs/Pez.drawio.png)
 
