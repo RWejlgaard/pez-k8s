@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: pez-sh
+  namespace: pezsh
+spec:
+  selector:
+    matchLabels:
+      app: pez-sh
+  workloadRef: 
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pez-sh
+  replicas: 1
+  strategy:
+    canary:
+      steps:
+      - setWeight: 10
+      - pause:
+          duration: "5m"
+      - setWeight: 20
+      - pause:
+          duration: "5m"
+      - setWeight: 40
+      - pause:
+          duration: "5m"
+      - setWeight: 50
+      - pause:
+          duration: "5m"
+      canaryService: pez-sh-canary
+      stableService: pez-sh-stable
+      trafficRouting:
+        istio:
+          virtualServices:
+          - name: pez-sh
+            routes:
+            - pez-sh
