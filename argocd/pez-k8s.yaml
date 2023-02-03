@@ -13,7 +13,7 @@ spec:
       selfHeal: true
   source:
     repoURL: https://github.com/rwejlgaard/pez-k8s.git
-    targetRevision: argocd-migration
+    targetRevision: HEAD
     path: argocd/applications/.
   destination:
     server: https://kubernetes.default.svc
