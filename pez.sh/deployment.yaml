@@ -26,7 +26,7 @@ spec:
           # - Each init container must complete successfully before the next one starts.
       containers:
       - name:  pez-sh
-        image:  docker.io/rwejlgaard/pez.sh:1.0.1
+        image:  docker.io/rwejlgaard/pez.sh:1.0.0
         imagePullPolicy: IfNotPresent
         resources:
           requests:

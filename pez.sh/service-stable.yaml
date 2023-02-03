@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pez-sh-stable
+  namespace: pezsh
+spec:
+  ports:
+  - name: pez-sh-stable
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: pez-sh
+  type: ClusterIP

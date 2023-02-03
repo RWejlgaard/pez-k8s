@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istio-config
+  name: argo-rollouts
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-wave: "2"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,10 +13,12 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
   source:
     repoURL: https://github.com/rwejlgaard/pez-k8s.git
     targetRevision: HEAD
-    path: istio-config/.
+    path: argo-rollouts/.
   destination:
     server: https://kubernetes.default.svc
-    namespace: istio-system
+    namespace: argo-rollouts

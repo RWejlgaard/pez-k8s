@@ -3,8 +3,6 @@ kind: VirtualService
 metadata:
   name: pez-sh
   namespace: pezsh
-  labels:
-    virtualservice.pez.sh/mutation: enabled
 spec:
   hosts:
   - pez-sh.london.pez.sh
@@ -14,8 +12,13 @@ spec:
   - istio-system/london-pez-sh
   - istio-system/paris-pez-sh
   - istio-system/copenhagen-pez-sh
-  
   http:
-  - route:
+  - name: pez-sh
+    route:
     - destination:
-        host: pez-sh.pezsh.svc.cluster.local
+        host: pez-sh-stable
+      weight: 100
+    - destination:
+        host: pez-sh-canary
+      weight: 0
+    
