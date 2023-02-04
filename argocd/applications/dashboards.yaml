@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: pez-sh
+  name: dashboards
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "12"
+    argocd.argoproj.io/sync-wave: "10"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -14,11 +14,8 @@ spec:
       prune: true
       selfHeal: true
   source:
-    chart: pez-sh
-    repoURL: https://rwejlgaard.github.io/pez-helm-charts/
-    targetRevision: 0.1.0
-    helm:
-      releaseName: pez-sh
+    repoURL: https://github.com/rwejlgaard/pez-k8s.git
+    targetRevision: HEAD
+    path: dashboards/.
   destination:
     server: https://kubernetes.default.svc
-    namespace: pezsh
