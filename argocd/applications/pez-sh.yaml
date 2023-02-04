@@ -13,12 +13,12 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
   source:
-    repoURL: https://github.com/rwejlgaard/pez-k8s.git
-    targetRevision: HEAD
-    path: pez.sh/.
+    chart: pez-sh
+    repoURL: https://rwejlgaard.github.io/pez-helm-charts/
+    targetRevision: 0.1.0
+    helm:
+      releaseName: pez-sh
   destination:
     server: https://kubernetes.default.svc
     namespace: pezsh
