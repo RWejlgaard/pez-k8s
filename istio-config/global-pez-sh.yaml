@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: paris-pez-sh
+  name: global-pez-sh
   namespace: istio-system
 spec:
   servers:
@@ -20,5 +20,5 @@ spec:
       number: 443
       protocol: HTTPS
     tls:
-      credentialName: wild-global-tls
+      credentialName: star-global-tls
       mode: SIMPLE

@@ -19,6 +19,12 @@ spec:
     targetRevision: 0.1.0
     helm:
       releaseName: pez-sh
+      values: |-
+        virtualService:
+          hosts:
+          - pez.sh.global.pez.sh
+          gateways:
+          - istio-system/global-pez-sh
   destination:
     server: https://kubernetes.default.svc
     namespace: pezsh

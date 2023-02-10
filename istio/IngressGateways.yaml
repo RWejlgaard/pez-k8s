@@ -69,7 +69,7 @@ spec:
         sidecar.istio.io/inject: "false"
     spec:
       nodeSelector:
-        node-role.kubernetes.io/master: "true"
+        istio.pez.sh/ingress: "true"
       securityContext:
         runAsUser: 1337
         runAsGroup: 1337
