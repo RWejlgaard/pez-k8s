@@ -22,9 +22,6 @@ spec:
     helm:
       releaseName: kube-prometheus-stack
       values: |
-        prometheusOperator:
-          admissionWebhooks:
-            enabled: false
         grafana:
           admin:
             existingSecret: "grafana-admin-credentials"
