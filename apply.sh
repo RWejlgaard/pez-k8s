@@ -1,5 +1,5 @@
 #!/bin/sh
-CONTEXTS="pez-london pez-paris pez-copenhagen"
+CONTEXTS="pez-london pez-copenhagen"
 
 for CONTEXT in $CONTEXTS
 do

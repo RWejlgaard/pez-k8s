@@ -6,11 +6,9 @@ metadata:
 spec:
   hosts:
   - argocd.london.pez.sh
-  - argocd.paris.pez.sh
   - argocd.copenhagen.pez.sh
   gateways:
   - istio-system/london-pez-sh
-  - istio-system/paris-pez-sh
   - istio-system/copenhagen-pez-sh
   
   http:
