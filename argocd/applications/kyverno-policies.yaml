@@ -21,6 +21,7 @@ spec:
     helm:
       releaseName: kyverno-stock-policies
       values: |-
+        podSecuritySeverity: low
         policyExclude:
           disallow-host-path:
             any:
