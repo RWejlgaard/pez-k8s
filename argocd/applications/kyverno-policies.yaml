@@ -20,6 +20,15 @@ spec:
     targetRevision: 2.7.2
     helm:
       releaseName: kyverno-stock-policies
+      values: |-
+        policyExclude:
+          disallow-host-path:
+            any:
+            - resources:
+                kinds:
+                - Pod
+                namespaces:
+                - istio-system
   destination:
     server: https://kubernetes.default.svc
     namespace: kyverno
