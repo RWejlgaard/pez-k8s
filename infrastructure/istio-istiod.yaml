@@ -19,3 +19,10 @@ spec:
     profile: ambient
     global:
       platform: k3s
+    # Right-sized for this small homelab (default 500m/2Gi doesn't fit the
+    # 1-vCPU / 2Gi nodes). 1Gi fits the c1.1VCPU-2GB workers.
+    pilot:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 1Gi
