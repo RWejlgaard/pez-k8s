@@ -14,10 +14,12 @@ spec:
     - type: Hostname
       value: istio-ingressgateway.istio-system.svc.cluster.local
   listeners:
-    # The Helm proxy listens unprivileged on 8080; its Service maps external
-    # :80 -> 8080. TLS terminates at Caddy, so this is plain HTTP.
+    # Bound to the proxy Service via `addresses`, so `port` is the SERVICE port
+    # (80), which istiod resolves through the Service's targetPort (8080) — the
+    # unprivileged port the proxy actually binds. TLS terminates at Caddy, so
+    # this is plain HTTP.
     - name: http
-      port: 8080
+      port: 80
       protocol: HTTP
       hostname: "*.k8s.pez.sh"
       allowedRoutes:
