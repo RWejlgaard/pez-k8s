@@ -16,6 +16,12 @@ spec:
         name: istio
         namespace: flux-system
   values:
+    # Bind this Helm-managed proxy to the Gateway API `shared-gateway` (manual
+    # deployment mode). istiod programs the proxy pods that carry this label
+    # with the listeners/routes from that Gateway. Applied to all chart
+    # resources incl. the pod template, which is what istiod matches on.
+    labels:
+      istio.io/gateway-name: shared-gateway
     # Pin the ingress gateway to the stable control-plane node (Karpenter
     # workers are ephemeral) and expose it ONLY on the Tailscale IP that Caddy
     # forwards to (TLS terminates at Caddy). ClusterIP + externalIPs avoids

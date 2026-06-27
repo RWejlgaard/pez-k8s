@@ -20,8 +20,10 @@ Workloads live in a separate repo:
 
 | Component | Notes |
 |-----------|-------|
+| Gateway API CRDs | Standard channel, pinned in `infrastructure/kustomization.yaml`; required by the `istio` GatewayClass and `shared-gateway` |
 | Istio base / istiod / cni / ztunnel | Ambient mesh (`profile: ambient`), `global.platform: k3s` for CNI paths |
-| istio-ingressgateway | Pinned to `k8s-control-plane`, exposed on the Tailscale IP via `service.externalIPs` (TLS at Caddy) |
+| istio-ingressgateway | Pinned to `k8s-control-plane`, exposed on the Tailscale IP via `service.externalIPs` (TLS at Caddy). Labeled `istio.io/gateway-name: shared-gateway` to bind to the shared Gateway in manual-deployment mode |
+| shared-gateway | Gateway API `Gateway` (`*.k8s.pez.sh`, port 8080) that apps attach to via `HTTPRoute`; replaces per-app Istio `Gateway`/`VirtualService` |
 
 ## Managed outside Flux (for now)
 
