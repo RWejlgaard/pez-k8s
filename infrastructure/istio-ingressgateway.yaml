@@ -38,3 +38,17 @@ spec:
       limits:
         cpu: 500m
         memory: 256Mi
+    # Allow envoy (UID 1337) to bind privileged port 80. The Helm gateway chart
+    # drops all caps by default; istioctl added NET_BIND_SERVICE, so without this
+    # the :80 listener never binds and the gateway returns no response.
+    securityContext:
+      runAsUser: 1337
+      runAsGroup: 1337
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        add:
+          - NET_BIND_SERVICE
+        drop:
+          - ALL
