@@ -24,6 +24,19 @@ spec:
       type: ClusterIP
       externalIPs:
         - 100.123.97.26
+      # Gateway runs unprivileged and listens on 8080/8443 (istiod won't program
+      # privileged ports <1024 for an unprivileged pod). Map external 80/443 to
+      # those targetPorts; the Gateway resources bind 8080.
+      ports:
+        - name: status-port
+          port: 15021
+          targetPort: 15021
+        - name: http2
+          port: 80
+          targetPort: 8080
+        - name: https
+          port: 443
+          targetPort: 8443
     nodeSelector:
       kubernetes.io/hostname: k8s-control-plane
     tolerations:
@@ -38,17 +51,3 @@ spec:
       limits:
         cpu: 500m
         memory: 256Mi
-    # Allow envoy (UID 1337) to bind privileged port 80. The Helm gateway chart
-    # drops all caps by default; istioctl added NET_BIND_SERVICE, so without this
-    # the :80 listener never binds and the gateway returns no response.
-    containerSecurityContext:
-      runAsUser: 1337
-      runAsGroup: 1337
-      runAsNonRoot: true
-      allowPrivilegeEscalation: false
-      readOnlyRootFilesystem: true
-      capabilities:
-        add:
-          - NET_BIND_SERVICE
-        drop:
-          - ALL
