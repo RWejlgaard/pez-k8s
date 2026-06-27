@@ -1,0 +1,28 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: istio-cni
+  namespace: istio-system
+spec:
+  interval: 1h
+  dependsOn:
+    - name: istiod
+  chart:
+    spec:
+      chart: cni
+      version: "1.30.2"
+      sourceRef:
+        kind: HelmRepository
+        name: istio
+        namespace: flux-system
+  values:
+    profile: ambient
+    # platform=k3s sets cniConfDir/cniBinDir to k3s paths
+    # (/var/lib/rancher/k3s/...), required for the istio-cni plugin to chain
+    # onto flannel and be found by containerd.
+    global:
+      platform: k3s
+    # Tolerate everything (incl. the karpenter.sh/unregistered:NoExecute startup
+    # taint) so CNI comes up on fresh Karpenter nodes before workloads land.
+    tolerations:
+      - operator: Exists

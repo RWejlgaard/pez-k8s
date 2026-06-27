@@ -1,0 +1,29 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: pez-k8s-apps
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: https://github.com/RWejlgaard/pez-k8s-apps
+  ref:
+    branch: main
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: apps
+  namespace: flux-system
+spec:
+  interval: 10m
+  retryInterval: 1m
+  timeout: 5m
+  # Wait for Istio (gateway/CRDs) to be ready before applying workloads.
+  dependsOn:
+    - name: infrastructure
+  sourceRef:
+    kind: GitRepository
+    name: pez-k8s-apps
+  path: ./
+  prune: true
+  wait: true
