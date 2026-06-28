@@ -29,7 +29,7 @@ spec:
       availableReplicas: ${deployment.status.availableReplicas}
 
   resources:
-    - id: namespace
+    - id: appNamespace
       template:
         apiVersion: v1
         kind: Namespace
@@ -44,7 +44,7 @@ spec:
         kind: Deployment
         metadata:
           name: ${schema.metadata.name}
-          namespace: ${namespace.metadata.name}
+          namespace: ${appNamespace.metadata.name}
         spec:
           replicas: ${schema.spec.replicas}
           selector:
@@ -98,7 +98,7 @@ spec:
         kind: Service
         metadata:
           name: ${schema.metadata.name}
-          namespace: ${namespace.metadata.name}
+          namespace: ${appNamespace.metadata.name}
         spec:
           selector:
             app: ${schema.metadata.name}
@@ -116,7 +116,7 @@ spec:
         kind: PodDisruptionBudget
         metadata:
           name: ${schema.metadata.name}
-          namespace: ${namespace.metadata.name}
+          namespace: ${appNamespace.metadata.name}
         spec:
           minAvailable: 1
           selector:
@@ -129,13 +129,15 @@ spec:
         kind: HTTPRoute
         metadata:
           name: ${schema.metadata.name}
-          namespace: ${namespace.metadata.name}
+          namespace: ${appNamespace.metadata.name}
         spec:
           parentRefs:
             - name: shared-gateway
               namespace: istio-system
           hostnames:
-            - ${schema.spec.host != "" ? schema.spec.host : schema.metadata.name + ".k8s.pez.sh"}
+            # Single-quoted: the ternary's ` : ` would otherwise be parsed as a
+            # YAML mapping instead of a string scalar.
+            - '${schema.spec.host != "" ? schema.spec.host : schema.metadata.name + ".k8s.pez.sh"}'
           rules:
             - backendRefs:
                 - name: ${schema.metadata.name}
