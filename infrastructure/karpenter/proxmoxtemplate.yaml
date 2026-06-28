@@ -1,0 +1,32 @@
+apiVersion: karpenter.proxmox.sinextra.dev/v1alpha1
+kind: ProxmoxTemplate
+metadata:
+  name: default
+spec:
+  agent:
+    enabled: true
+    fsFreezeOnBackup: true
+    fsTrimClonedDisks: false
+    type: virtio
+  bios: seabios
+  cpu:
+    flags:
+      - +pdpe1gb
+    type: x86-64-v2-AES
+  machine: q35
+  network:
+    - name: net0
+      bridge: vmbr0
+      model: virtio
+      mtu: 1500
+      firewall: true
+  sourceImage:
+    imageName: ubuntu-resolute-amd64.qcow2
+    url: https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img
+  storageIDs:
+    - hdd
+  tags:
+    - talos-k8s-proxmox
+    - karpenter
+  vga:
+    type: serial0

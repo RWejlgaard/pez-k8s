@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+# Declarative, non-sensitive Karpenter resources only. The controller itself is
+# still installed out-of-band via Helm (ghcr.io/sergelogvinov/karpenter-provider-proxmox,
+# chart 0.4.7 / app v0.11.0), which also provides the CRDs these depend on.
+#
+# Deliberately NOT in git (applied directly to the cluster):
+#   - secret/karpenter-provider-proxmox (kube-system) — Proxmox API credentials
+#   - secret/karpenter-template-values  (kube-system) — holds the real K3sToken
+#     join token (referenced by nodeclass.yaml via metadataOptions.valuesRef)
+resources:
+  - nodepool.yaml
+  - nodeclass.yaml
+  - proxmoxtemplate.yaml
+  - cloud-init.yaml

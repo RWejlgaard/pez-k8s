@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  # Gateway API CRDs (standard channel) — Istio does not bundle these, and the
+  # `istio` GatewayClass / shared-gateway.yaml depend on them. kustomize-controller
+  # applies CRDs before the Gateway resource.
+  - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
+  - namespace.yaml
+  - sources.yaml
+  - base.yaml
+  - istiod.yaml
+  - cni.yaml
+  - ztunnel.yaml
+  - ingressgateway.yaml
+  - shared-gateway.yaml
