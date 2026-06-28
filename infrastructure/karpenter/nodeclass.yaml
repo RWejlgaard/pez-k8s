@@ -1,0 +1,27 @@
+apiVersion: karpenter.proxmox.sinextra.dev/v1alpha1
+kind: ProxmoxNodeClass
+metadata:
+  name: default
+spec:
+  bootDevice:
+    size: 50G
+    storage: hdd
+  instanceTemplateRef:
+    kind: ProxmoxTemplate
+    name: default
+  # Cloud-init metadata: render the `karpenter-template` templates (cloud-init.yaml)
+  # with the values from `karpenter-template-values` (kept out of git — join token),
+  # delivered to the VM as a cdrom (nocloud) datasource.
+  metadataOptions:
+    templatesRef:
+      name: karpenter-template
+      namespace: kube-system
+    valuesRef:
+      name: karpenter-template-values
+      namespace: kube-system
+    type: cdrom
+  placementStrategy:
+    zoneBalance: Balanced
+  region: pez-k8s
+  tags:
+    - karpenter
