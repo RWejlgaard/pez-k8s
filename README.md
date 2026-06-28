@@ -25,6 +25,7 @@ Workloads live in a separate repo:
 | istio-ingressgateway | Pinned to `k8s-control-plane`, exposed on the Tailscale IP via `service.externalIPs` (TLS at Caddy). Labeled `istio.io/gateway-name: shared-gateway` to bind to the shared Gateway in manual-deployment mode |
 | shared-gateway | Gateway API `Gateway` (`*.k8s.pez.sh`, port 8080) that apps attach to via `HTTPRoute`; replaces per-app Istio `Gateway`/`VirtualService` |
 | Karpenter config | `infrastructure/karpenter.yaml` — `NodePool`/`ProxmoxNodeClass`/`ProxmoxTemplate` + the non-sensitive cloud-init `karpenter-template` Secret. The controller + CRDs are still Helm-managed out-of-band (see below) |
+| kro | `infrastructure/kro/` — the [kro](https://kro.run) controller (Flux `HelmRelease`) plus the `workload` `ResourceGraphDefinition`. Defines the `Workload` CRD that `pez-k8s-apps` uses to describe an app in one manifest; kro reconciles each into a namespace + Deployment/Service/PDB/HTTPRoute |
 
 ## Managed outside Flux (for now)
 
