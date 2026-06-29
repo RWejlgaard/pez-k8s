@@ -1,0 +1,12 @@
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  # Mesh-wide (root config namespace, no selector): every meshed workload must
+  # speak mTLS. Rejects plaintext from any unmeshed pod, so the SPIFFE
+  # identities the AuthorizationPolicies match on can't be spoofed. ztunnel
+  # already does mTLS automatically; STRICT removes the plaintext fallback.
+  mtls:
+    mode: STRICT
