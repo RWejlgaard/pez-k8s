@@ -6,9 +6,10 @@ spec:
   # Generated CRD: Workload (kro.run/v1alpha1, namespaced).
   # A Workload is declared in the `workloads` namespace; kro fans it out into
   # its own per-app namespace (named after the Workload) with the ambient label,
-  # a Deployment, Service, an optional PodDisruptionBudget, and an HTTPRoute on
-  # the shared gateway. Cleanup is handled by kro's finalizer (cross-namespace,
-  # so native owner-ref GC does not apply).
+  # a dedicated ServiceAccount (the workload's mesh identity), a Deployment,
+  # Service, an optional PodDisruptionBudget, an HTTPRoute on the shared gateway,
+  # and an optional AuthorizationPolicy. Cleanup is handled by kro's finalizer
+  # (cross-namespace, so native owner-ref GC does not apply).
   schema:
     apiVersion: v1alpha1
     kind: Workload
@@ -24,6 +25,19 @@ spec:
       memoryRequest: string | default="32Mi"
       cpuLimit: string | default="200m"
       memoryLimit: string | default="64Mi"
+      # Workload authorization (ambient L4, enforced by ztunnel on the callee).
+      # When either list is non-empty an AuthorizationPolicy is generated that
+      # ALLOWs only the listed identities (plus the shared ingress gateway, so
+      # public routes keep working) and default-denies everything else. Both
+      # empty (the default) => no policy => allow-all, unchanged behaviour.
+      #
+      # allowTrafficFrom: sibling Workload names. Each maps to its SPIFFE
+      # principal spiffe://cluster.local/ns/<name>/sa/<name>.
+      allowTrafficFrom: '[]string | default=[]'
+      # allowPrincipals: raw Istio principals passed straight through, for
+      # external / cross-trust-domain identities that don't follow the
+      # name==ns==sa convention (e.g. "cluster.local/ns/foo/sa/bar").
+      allowPrincipals: '[]string | default=[]'
     status:
       # Surface the rolled-up Deployment availability back on the Workload.
       availableReplicas: ${deployment.status.availableReplicas}
@@ -37,6 +51,16 @@ spec:
           name: ${schema.metadata.name}
           labels:
             istio.io/dataplane-mode: ambient
+
+    - id: serviceAccount
+      # Dedicated identity per workload so its SPIFFE ID is meaningful
+      # (spiffe://cluster.local/ns/<name>/sa/<name>) rather than shared "default".
+      template:
+        apiVersion: v1
+        kind: ServiceAccount
+        metadata:
+          name: ${schema.metadata.name}
+          namespace: ${appNamespace.metadata.name}
 
     - id: deployment
       template:
@@ -55,6 +79,7 @@ spec:
               labels:
                 app: ${schema.metadata.name}
             spec:
+              serviceAccountName: ${serviceAccount.metadata.name}
               nodeSelector:
                 karpenter.sh/nodepool: default
               # Best-effort spread so Karpenter consolidation can't drain the
@@ -142,3 +167,31 @@ spec:
             - backendRefs:
                 - name: ${schema.metadata.name}
                   port: ${schema.spec.port}
+
+    - id: authz
+      # Only generated when the workload opts in to lock-down. ALLOW action =>
+      # any source not listed is denied. In ambient this is enforced at L4 by
+      # ztunnel using the peer's mTLS SPIFFE identity, so no waypoint is needed.
+      includeWhen:
+        - ${size(schema.spec.allowTrafficFrom) > 0 ||
+          size(schema.spec.allowPrincipals) > 0}
+      template:
+        apiVersion: security.istio.io/v1
+        kind: AuthorizationPolicy
+        metadata:
+          name: ${schema.metadata.name}
+          namespace: ${appNamespace.metadata.name}
+        spec:
+          selector:
+            matchLabels:
+              app: ${schema.metadata.name}
+          action: ALLOW
+          rules:
+            - from:
+                - source:
+                    # Sibling names -> SPIFFE principals, plus any raw
+                    # principals, plus the shared ingress gateway so public
+                    # HTTPRoutes keep working under default-deny.
+                    principals: ${schema.spec.allowTrafficFrom.map(w, "cluster.local/ns/" + w +
+                      "/sa/" + w) + schema.spec.allowPrincipals +
+                      ["cluster.local/ns/istio-system/sa/istio-ingressgateway"]}

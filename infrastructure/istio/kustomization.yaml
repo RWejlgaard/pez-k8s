@@ -13,3 +13,4 @@ resources:
   - ztunnel.yaml
   - ingressgateway.yaml
   - shared-gateway.yaml
+  - peer-authentication.yaml
