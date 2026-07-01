@@ -24,5 +24,12 @@ spec:
       platform: k3s
     # Tolerate everything (incl. the karpenter.sh/unregistered:NoExecute startup
     # taint) so CNI comes up on fresh Karpenter nodes before workloads land.
+    resources:
+      requests:
+        cpu: 10m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
     tolerations:
       - operator: Exists
