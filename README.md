@@ -25,7 +25,7 @@ Workloads live in a separate repo:
 | istio-ingressgateway | Pinned to `k8s-control-plane`, exposed on the Tailscale IP via `service.externalIPs` (TLS at Caddy). Labeled `istio.io/gateway-name: shared-gateway` to bind to the shared Gateway in manual-deployment mode |
 | shared-gateway | Gateway API `Gateway` (`*.k8s.pez.sh`, port 8080) that apps attach to via `HTTPRoute`; replaces per-app Istio `Gateway`/`VirtualService` |
 | Karpenter config | `infrastructure/karpenter.yaml` — `NodePool`/`ProxmoxNodeClass`/`ProxmoxTemplate` + the non-sensitive cloud-init `karpenter-template` Secret. The controller + CRDs are still Helm-managed out-of-band (see below) |
-| kro | `infrastructure/kro/` — the [kro](https://kro.run) controller (Flux `HelmRelease`) plus the `workload` `ResourceGraphDefinition`. Defines the `Workload` CRD that `pez-k8s-apps` uses to describe an app in one manifest; kro reconciles each into a namespace + Deployment/Service/PDB/HTTPRoute |
+| kro | `infrastructure/kro/` — the [kro](https://kro.run) controller (Flux `HelmRelease`) plus the `workload` `ResourceGraphDefinition`. Defines the `Workload` CRD that `pez-k8s-apps` uses to describe an app in one manifest; kro reconciles each into a namespace + Deployment/Service/PDB/HPA/HTTPRoute/AuthorizationPolicy. Pods run hardened by default (non-root uid 65532, all capabilities dropped, read-only rootfs, no SA token) with `allowRoot`/`writableRootFilesystem` escape hatches; `maxReplicas` enables CPU autoscaling, `public: false` skips the HTTPRoute for mesh-internal services |
 
 ## Managed outside Flux (for now)
 
