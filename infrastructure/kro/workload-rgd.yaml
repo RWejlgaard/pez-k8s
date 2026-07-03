@@ -124,7 +124,7 @@ spec:
               automountServiceAccountToken: false
               enableServiceLinks: false
               securityContext:
-                runAsNonRoot: ${!schema.spec.allowRoot}
+                runAsNonRoot: '${schema.spec.allowRoot ? false : true}'
                 runAsUser: '${schema.spec.allowRoot ? 0 : 65532}'
                 runAsGroup: '${schema.spec.allowRoot ? 0 : 65532}'
                 seccompProfile:
@@ -145,7 +145,7 @@ spec:
                   image: ${schema.spec.image}
                   securityContext:
                     allowPrivilegeEscalation: false
-                    readOnlyRootFilesystem: ${!schema.spec.writableRootFilesystem}
+                    readOnlyRootFilesystem: '${schema.spec.writableRootFilesystem ? false : true}'
                     capabilities:
                       drop: '${schema.spec.allowRoot ? ["NET_RAW"] : ["ALL"]}'
                   ports:
@@ -203,7 +203,7 @@ spec:
               automountServiceAccountToken: false
               enableServiceLinks: false
               securityContext:
-                runAsNonRoot: ${!schema.spec.allowRoot}
+                runAsNonRoot: '${schema.spec.allowRoot ? false : true}'
                 runAsUser: '${schema.spec.allowRoot ? 0 : 65532}'
                 runAsGroup: '${schema.spec.allowRoot ? 0 : 65532}'
                 seccompProfile:
@@ -224,7 +224,7 @@ spec:
                   image: ${schema.spec.image}
                   securityContext:
                     allowPrivilegeEscalation: false
-                    readOnlyRootFilesystem: ${!schema.spec.writableRootFilesystem}
+                    readOnlyRootFilesystem: '${schema.spec.writableRootFilesystem ? false : true}'
                     capabilities:
                       drop: '${schema.spec.allowRoot ? ["NET_RAW"] : ["ALL"]}'
                   ports:
