@@ -1,31 +1,37 @@
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
+apiVersion: argoproj.io/v1alpha1
+kind: Application
 metadata:
   name: istiod
-  namespace: istio-system
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
-  interval: 1h
-  dependsOn:
-    - name: istio-base
-  chart:
-    spec:
-      chart: istiod
-      version: "1.30.2"
-      sourceRef:
-        kind: HelmRepository
-        name: istio
-        namespace: flux-system
-  values:
-    profile: ambient
-    global:
-      platform: k3s
-    # Right-sized for this small homelab (default 500m/2Gi doesn't fit the
-    # 1-vCPU / 2Gi nodes). 1Gi fits the c1.1VCPU-2GB workers.
-    pilot:
-      resources:
-        requests:
-          cpu: 100m
-          memory: 1Gi
-        limits:
-          cpu: 500m
-          memory: 1Gi
+  project: default
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: istiod
+    targetRevision: "1.30.2"
+    helm:
+      values: |
+        profile: ambient
+        global:
+          platform: k3s
+        # Right-sized for this small homelab (default 500m/2Gi doesn't fit the
+        # 1-vCPU / 2Gi nodes). 1Gi fits the c1.1VCPU-2GB workers.
+        pilot:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

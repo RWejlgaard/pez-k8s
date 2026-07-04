@@ -1,59 +1,65 @@
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
+apiVersion: argoproj.io/v1alpha1
+kind: Application
 metadata:
   name: istio-ingressgateway
-  namespace: istio-system
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
 spec:
-  interval: 1h
-  dependsOn:
-    - name: istiod
-  chart:
-    spec:
-      chart: gateway
-      version: "1.30.2"
-      sourceRef:
-        kind: HelmRepository
-        name: istio
-        namespace: flux-system
-  values:
-    # Bind this Helm-managed proxy to the Gateway API `shared-gateway` (manual
-    # deployment mode). istiod programs the proxy pods that carry this label
-    # with the listeners/routes from that Gateway. Applied to all chart
-    # resources incl. the pod template, which is what istiod matches on.
-    labels:
-      istio.io/gateway-name: shared-gateway
-    # Pin the ingress gateway to the stable control-plane node (Karpenter
-    # workers are ephemeral) and expose it ONLY on the Tailscale IP that Caddy
-    # forwards to (TLS terminates at Caddy). ClusterIP + externalIPs avoids
-    # k3s servicelb binding every node's LAN IP.
-    service:
-      type: ClusterIP
-      externalIPs:
-        - 100.123.97.26
-      # Gateway runs unprivileged and listens on 8080/8443 (istiod won't program
-      # privileged ports <1024 for an unprivileged pod). Map external 80/443 to
-      # those targetPorts; the Gateway resources bind 8080.
-      ports:
-        - name: status-port
-          port: 15021
-          targetPort: 15021
-        - name: http2
-          port: 80
-          targetPort: 8080
-        - name: https
-          port: 443
-          targetPort: 8443
-    nodeSelector:
-      kubernetes.io/hostname: k8s-control-plane
-    tolerations:
-      - key: node-role.kubernetes.io/control-plane
-        operator: Exists
-        effect: NoSchedule
-    # Lightweight request so it fits the resource-constrained control-plane.
-    resources:
-      requests:
-        cpu: 10m
-        memory: 64Mi
-      limits:
-        cpu: 500m
-        memory: 256Mi
+  project: default
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: gateway
+    targetRevision: "1.30.2"
+    helm:
+      values: |
+        # Bind this Helm-managed proxy to the Gateway API `shared-gateway` (manual
+        # deployment mode). istiod programs the proxy pods that carry this label
+        # with the listeners/routes from that Gateway. Applied to all chart
+        # resources incl. the pod template, which is what istiod matches on.
+        labels:
+          istio.io/gateway-name: shared-gateway
+        # Pin the ingress gateway to the stable control-plane node (Karpenter
+        # workers are ephemeral) and expose it ONLY on the Tailscale IP that Caddy
+        # forwards to (TLS terminates at Caddy). ClusterIP + externalIPs avoids
+        # k3s servicelb binding every node's LAN IP.
+        service:
+          type: ClusterIP
+          externalIPs:
+            - 100.123.97.26
+          # Gateway runs unprivileged and listens on 8080/8443 (istiod won't program
+          # privileged ports <1024 for an unprivileged pod). Map external 80/443 to
+          # those targetPorts; the Gateway resources bind 8080.
+          ports:
+            - name: status-port
+              port: 15021
+              targetPort: 15021
+            - name: http2
+              port: 80
+              targetPort: 8080
+            - name: https
+              port: 443
+              targetPort: 8443
+        nodeSelector:
+          kubernetes.io/hostname: k8s-control-plane
+        tolerations:
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
+        # Lightweight request so it fits the resource-constrained control-plane.
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

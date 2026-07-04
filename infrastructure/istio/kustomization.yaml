@@ -6,7 +6,6 @@ resources:
   # applies CRDs before the Gateway resource.
   - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
   - namespace.yaml
-  - sources.yaml
   - base.yaml
   - istiod.yaml
   - cni.yaml

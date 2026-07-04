@@ -1,35 +1,41 @@
-apiVersion: helm.toolkit.fluxcd.io/v2
-kind: HelmRelease
+apiVersion: argoproj.io/v1alpha1
+kind: Application
 metadata:
   name: istio-cni
-  namespace: istio-system
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
-  interval: 1h
-  dependsOn:
-    - name: istiod
-  chart:
-    spec:
-      chart: cni
-      version: "1.30.2"
-      sourceRef:
-        kind: HelmRepository
-        name: istio
-        namespace: flux-system
-  values:
-    profile: ambient
-    # platform=k3s sets cniConfDir/cniBinDir to k3s paths
-    # (/var/lib/rancher/k3s/...), required for the istio-cni plugin to chain
-    # onto flannel and be found by containerd.
-    global:
-      platform: k3s
-    # Tolerate everything (incl. the karpenter.sh/unregistered:NoExecute startup
-    # taint) so CNI comes up on fresh Karpenter nodes before workloads land.
-    resources:
-      requests:
-        cpu: 10m
-        memory: 64Mi
-      limits:
-        cpu: 100m
-        memory: 128Mi
-    tolerations:
-      - operator: Exists
+  project: default
+  source:
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    chart: cni
+    targetRevision: "1.30.2"
+    helm:
+      values: |
+        profile: ambient
+        # platform=k3s sets cniConfDir/cniBinDir to k3s paths
+        # (/var/lib/rancher/k3s/...), required for the istio-cni plugin to chain
+        # onto flannel and be found by containerd.
+        global:
+          platform: k3s
+        # Tolerate everything (incl. the karpenter.sh/unregistered:NoExecute startup
+        # taint) so CNI comes up on fresh Karpenter nodes before workloads land.
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+        tolerations:
+          - operator: Exists
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

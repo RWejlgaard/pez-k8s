@@ -1,0 +1,8 @@
+# TLS terminates at Caddy (same pattern as istio-ingressgateway), so argocd-server
+# only needs to speak plain HTTP behind the shared gateway.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmd-params-cm
+data:
+  server.insecure: "true"
