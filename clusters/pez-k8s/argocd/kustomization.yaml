@@ -10,3 +10,21 @@ resources:
   - route.yaml
 patches:
   - path: cmd-params-patch.yaml
+  # Drop the ApplicationSet CRD + controller entirely (unused in this design;
+  # its ~1.4MB CRD schema pegs this cluster's single-vCPU control-plane node
+  # hard enough to fail kubelet health probes cluster-wide). One deletion per
+  # patch entry: kustomize v5.4.3 panics (nil pointer dereference in
+  # PatchTransformer) when more than one `$patch: delete` document shares a
+  # single patch file/entry. No `namespace:` on the namespaced kinds — the
+  # upstream manifest doesn't set one either (meant to be applied with
+  # `kubectl apply -n argocd`), and these patches match before the namespace
+  # transformer runs.
+  - path: delete-applicationset-serviceaccount.yaml
+  - path: delete-applicationset-role.yaml
+  - path: delete-applicationset-clusterrole.yaml
+  - path: delete-applicationset-rolebinding.yaml
+  - path: delete-applicationset-clusterrolebinding.yaml
+  - path: delete-applicationset-service.yaml
+  - path: delete-applicationset-deployment.yaml
+  - path: delete-applicationset-networkpolicy.yaml
+  - path: delete-applicationset-crd.yaml
