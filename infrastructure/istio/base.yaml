@@ -14,14 +14,16 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
-  # istiod rewrites its own CA bundle into this webhook at runtime, so it will
-  # never match the chart's static value — not a real drift.
+  # istiod (field manager "pilot-discovery") patches this webhook's caBundle
+  # and flips failurePolicy Ignore->Fail once it's ready to serve — ignore
+  # whatever that manager owns rather than enumerating fields, since Istio has
+  # changed exactly which fields it patches across versions.
   ignoreDifferences:
     - group: admissionregistration.k8s.io
       kind: ValidatingWebhookConfiguration
       name: istiod-default-validator
-      jqPathExpressions:
-        - .webhooks[].clientConfig.caBundle
+      managedFieldsManagers:
+        - pilot-discovery
   syncPolicy:
     automated:
       prune: true
