@@ -4,4 +4,3 @@ resources:
   # Each subsystem owns its own kustomization; add new ones here.
   - istio       # ambient mesh + Gateway API ingress (Gateway API CRDs, shared-gateway)
   - karpenter   # Proxmox node-fleet config (NodePool/ProxmoxNodeClass/ProxmoxTemplate)
-  - kro         # kro controller + Workload ResourceGraphDefinition (CRD for apps)

@@ -11,7 +11,7 @@
 #      the rendered output through kubeconform.
 #
 # Schemas: the Kubernetes defaults and the community CRDs-catalog (Istio,
-# Gateway API, Karpenter, kro, ArgoCD's Application/AppProject). Anything still
+# Gateway API, Karpenter, ArgoCD's Application/AppProject). Anything still
 # unknown is skipped via -ignore-missing-schemas rather than failing the build.
 #
 # Requires: kustomize, kubeconform, curl, tar.
