@@ -127,12 +127,14 @@ spec:
                   type: RuntimeDefault
               nodeSelector:
                 karpenter.sh/nodepool: default
-              # Best-effort spread so Karpenter consolidation can't drain the
-              # whole app at once; a no-op at replicas=1 (ScheduleAnyway).
+              # Hard spread so Karpenter consolidation can't drain the whole
+              # app at once; a no-op at replicas=1. DoNotSchedule means pods
+              # stay Pending if there aren't enough distinct nodes to spread
+              # across (e.g. maxReplicas > available node count).
               topologySpreadConstraints:
                 - maxSkew: 1
                   topologyKey: kubernetes.io/hostname
-                  whenUnsatisfiable: ScheduleAnyway
+                  whenUnsatisfiable: DoNotSchedule
                   labelSelector:
                     matchLabels:
                       app: ${schema.metadata.name}
