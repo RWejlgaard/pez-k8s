@@ -28,3 +28,20 @@ patches:
   - path: delete-applicationset-deployment.yaml
   - path: delete-applicationset-networkpolicy.yaml
   - path: delete-applicationset-crd.yaml
+  # Same reasoning for dex (SSO, unused — we only use local admin login) and
+  # notifications (unused — no Notification configs). Every pod removed
+  # matters on this node's single vCPU.
+  - path: delete-dex-serviceaccount.yaml
+  - path: delete-dex-role.yaml
+  - path: delete-dex-rolebinding.yaml
+  - path: delete-dex-service.yaml
+  - path: delete-dex-deployment.yaml
+  - path: delete-dex-networkpolicy.yaml
+  - path: delete-notifications-serviceaccount.yaml
+  - path: delete-notifications-role.yaml
+  - path: delete-notifications-rolebinding.yaml
+  - path: delete-notifications-configmap.yaml
+  - path: delete-notifications-secret.yaml
+  - path: delete-notifications-service.yaml
+  - path: delete-notifications-deployment.yaml
+  - path: delete-notifications-networkpolicy.yaml
