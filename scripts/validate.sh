@@ -1,19 +1,18 @@
 #!/usr/bin/env bash
 
 # Validate every manifest and kustomize overlay in this repo against its JSON
-# schema, mirroring what Flux's kustomize-controller does before it applies.
+# schema, mirroring what ArgoCD's repo-server does before it applies.
 #
-# Three passes:
-#   1. kubeconform the loose Flux Kustomization/GitRepository CRs under
-#      ./clusters/<cluster>/ that are applied by `flux bootstrap`, not built by
-#      kustomize.
+# Two passes:
+#   1. kubeconform the loose ArgoCD Application CRs under ./clusters/<cluster>/
+#      that are applied directly (the root Application's "app of apps" bootstrap
+#      set), not built by kustomize.
 #   2. `kustomize build` every directory that owns a kustomization.yaml and pipe
 #      the rendered output through kubeconform.
 #
-# Schemas: the Kubernetes defaults, the Flux CRD schemas (downloaded below), and
-# the community CRDs-catalog for everything else (Istio, Gateway API, Karpenter,
-# kro). Anything still unknown is skipped via -ignore-missing-schemas rather
-# than failing the build.
+# Schemas: the Kubernetes defaults and the community CRDs-catalog (Istio,
+# Gateway API, Karpenter, kro, ArgoCD's Application/AppProject). Anything still
+# unknown is skipped via -ignore-missing-schemas rather than failing the build.
 #
 # Requires: kustomize, kubeconform, curl, tar.
 
@@ -31,17 +30,11 @@ kubeconform_flags=(
   "-ignore-missing-schemas"
   "-skip=Secret"
   "-schema-location" "default"
-  "-schema-location" "/tmp/flux-crd-schemas/master-standalone-strict"
   "-schema-location" "https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json"
   "-verbose"
 )
 
-echo "INFO - Downloading Flux OpenAPI schemas"
-mkdir -p /tmp/flux-crd-schemas/master-standalone-strict
-curl -fsSL https://github.com/fluxcd/flux2/releases/latest/download/crd-schemas.tar.gz | \
-  tar zxf - -C /tmp/flux-crd-schemas/master-standalone-strict
-
-echo "INFO - Validating cluster Flux resources"
+echo "INFO - Validating cluster ArgoCD resources"
 find ./clusters -maxdepth 2 -type f -name '*.yaml' -print0 | while IFS= read -r -d $'\0' file; do
   echo "INFO - Validating ${file}"
   kubeconform "${kubeconform_flags[@]}" "${file}"

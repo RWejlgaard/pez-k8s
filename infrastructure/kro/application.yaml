@@ -1,23 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istio-base
+  name: kro
   namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   source:
-    repoURL: https://istio-release.storage.googleapis.com/charts
-    chart: base
-    targetRevision: "1.30.2"
+    repoURL: registry.k8s.io/kro/charts
+    chart: kro
+    targetRevision: "0.9.2"
   destination:
     server: https://kubernetes.default.svc
-    namespace: istio-system
+    namespace: kro
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      # kro's CRDs need force-replace on upgrade, same reason the old HelmRelease
+      # set install/upgrade crds: CreateReplace.
       - ServerSideApply=true

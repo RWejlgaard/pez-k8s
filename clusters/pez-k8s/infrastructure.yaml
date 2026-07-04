@@ -1,15 +1,23 @@
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
+apiVersion: argoproj.io/v1alpha1
+kind: Application
 metadata:
   name: infrastructure
-  namespace: flux-system
+  namespace: argocd
+  annotations:
+    # Ahead of the "apps" Application (wave "2") so workloads never race
+    # Istio/kro coming up. Replaces the old Flux dependsOn.
+    argocd.argoproj.io/sync-wave: "1"
 spec:
-  interval: 1h
-  retryInterval: 1m
-  timeout: 10m
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-  path: ./infrastructure
-  prune: true
-  wait: true
+  project: default
+  source:
+    repoURL: https://github.com/RWejlgaard/pez-k8s.git
+    targetRevision: main
+    path: infrastructure
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

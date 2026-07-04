@@ -1,5 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - helmrelease.yaml   # kro controller (via Flux HelmRelease)
+  - repository.yaml    # ArgoCD Repository (OCI helm registry) for the kro chart
+  - application.yaml   # kro controller (via ArgoCD Application)
   - workload-rgd.yaml  # Workload CRD + reconcile graph
