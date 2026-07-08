@@ -21,3 +21,9 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      # PeerAuthentication's CRD is installed by istio-base's Helm chart
+      # (a nested Application, wave 0) rather than a resource in this sync
+      # itself. Without this, ArgoCD's up-front validation rejects the whole
+      # sync as soon as it can't find that CRD, before applying anything —
+      # this lets it skip validation and retry in wave order instead.
+      - SkipDryRunOnMissingResource=true

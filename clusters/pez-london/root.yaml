@@ -31,3 +31,7 @@ spec:
       # ArgoCD's own CRDs are too large for client-side apply's
       # last-applied-configuration annotation — required for self-management.
       - ServerSideApply=true
+      # route.yaml's HTTPRoute CRD comes from the separate "infrastructure"
+      # Application, not this sync — skip dry-run validation for it so this
+      # sync doesn't fail whole-batch while waiting on that CRD to land.
+      - SkipDryRunOnMissingResource=true
