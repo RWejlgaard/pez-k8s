@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infrastructure
+  namespace: argocd
+  annotations:
+    # Ahead of the "apps" Application (wave "2") so workloads never race
+    # Istio/kro coming up. Replaces the old Flux dependsOn.
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/RWejlgaard/pez-k8s.git
+    targetRevision: main
+    path: infrastructure/clusters/pez-london
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,27 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: shared-gateway
+  namespace: istio-system
+spec:
+  gatewayClassName: istio
+  # Manual deployment mode: this Gateway binds to the existing Helm-managed
+  # ingress gateway proxy (pinned to k8s-control-plane, exposed on the Tailscale
+  # externalIP) rather than having Istio auto-provision a new one. The proxy
+  # pods carry the matching `istio.io/gateway-name: shared-gateway` label (set
+  # via the gateway HelmRelease) and `addresses` advertises its Service.
+  addresses:
+    - type: Hostname
+      value: istio-ingressgateway.istio-system.svc.cluster.local
+  listeners:
+    # Bound to the proxy Service via `addresses`, so `port` is the SERVICE port
+    # (80), which istiod resolves through the Service's targetPort (8080) — the
+    # unprivileged port the proxy actually binds. TLS terminates at Caddy, so
+    # this is plain HTTP.
+    - name: http
+      port: 80
+      protocol: HTTP
+      hostname: "*.lon.pez.sh"
+      allowedRoutes:
+        namespaces:
+          from: All

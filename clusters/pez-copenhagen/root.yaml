@@ -1,8 +1,5 @@
-# Self-managing "app of apps": ArgoCD reconciles its own install (via the
-# clusters/pez-k8s/argocd kustomize source) plus this directory's loose
-# Applications (infrastructure.yaml, apps.yaml, this file). Mirrors how the old
-# Flux flux-system Kustomization pointed at "./clusters/pez-k8s" and
-# self-reconciled its own bootstrap manifests.
+# Self-managing "app of apps": ArgoCD reconciles its own install plus this
+# directory's loose Applications (infrastructure.yaml, this file).
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -12,16 +9,16 @@ spec:
   project: default
   sources:
     # Non-recursive: picks up the loose *.yaml files directly under
-    # clusters/pez-k8s/ without descending into argocd/ (handled by the
+    # clusters/pez-copenhagen/ without descending into argocd/ (handled by the
     # second, kustomize-typed source below).
     - repoURL: https://github.com/RWejlgaard/pez-k8s.git
       targetRevision: main
-      path: clusters/pez-k8s
+      path: clusters/pez-copenhagen
       directory:
         recurse: false
     - repoURL: https://github.com/RWejlgaard/pez-k8s.git
       targetRevision: main
-      path: clusters/pez-k8s/argocd
+      path: clusters/pez-copenhagen/argocd
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

@@ -21,7 +21,7 @@ spec:
     - name: http
       port: 80
       protocol: HTTP
-      hostname: "*.k8s.pez.sh"
+      hostname: "*.cph.pez.sh"
       allowedRoutes:
         namespaces:
           from: All

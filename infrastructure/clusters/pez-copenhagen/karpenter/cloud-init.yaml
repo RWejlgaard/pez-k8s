@@ -1,0 +1,56 @@
+# Cloud-init templates rendered per-node by the ProxmoxNodeClass (nodeclass.yaml).
+# These are pure Go templates — the actual secret values (K3sToken, K3sURL) are
+# interpolated at render time from `karpenter-template-values`, which stays out
+# of git. Safe to commit as-is.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: karpenter-template
+  namespace: kube-system
+type: Opaque
+stringData:
+  network-config: |
+    network:
+      version: 2
+      ethernets:
+    {{- range .Interfaces }}
+        {{ .Name }}:
+          match:
+            macaddress: {{ .MacAddr | lower | quote }}
+          dhcp4: true
+          dhcp6: false
+    {{- if ne .MTU 0 }}
+          mtu: {{ .MTU }}
+    {{- end }}
+    {{- end }}
+  user-data: |
+    #cloud-config
+    hostname: {{ .Metadata.Hostname }}
+    manage_etc_hosts: true
+
+    users:
+      - name: ubuntu
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        shell: /bin/bash
+        lock_passwd: true{{- with get .Values "SSHAuthorizedKeys" }}
+        ssh_authorized_keys:{{- range (split . ",") }}
+          - {{ . }}{{- end }}{{- end }}
+
+    write_files:
+      - path: /usr/local/bin/join-k3s.sh
+        permissions: '0755'
+        content: |
+          #!/bin/bash
+          set -euo pipefail
+          curl -sfL https://get.k3s.io | \
+            INSTALL_K3S_VERSION="{{ get .Values "K3sVersion" }}" \
+            K3S_URL="{{ get .Values "K3sURL" }}" \
+            K3S_TOKEN="{{ get .Values "K3sToken" }}" \
+            sh -s - agent \
+              --node-name "{{ .Metadata.Hostname }}" \
+              --kubelet-arg "provider-id={{ .Metadata.ProviderID }}" \
+              --kubelet-arg "register-with-taints=karpenter.sh/unregistered:NoExecute"
+
+    runcmd:
+      - swapoff -a
+      - /usr/local/bin/join-k3s.sh
