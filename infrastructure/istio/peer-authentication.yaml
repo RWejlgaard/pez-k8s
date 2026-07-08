@@ -3,6 +3,11 @@ kind: PeerAuthentication
 metadata:
   name: default
   namespace: istio-system
+  annotations:
+    # Its CRD is installed by istio-base's Helm chart (wave 0). Without this,
+    # ArgoCD validates this resource in the same wave and, finding the CRD
+    # missing, fails the whole sync operation before anything gets applied.
+    argocd.argoproj.io/sync-wave: "5"
 spec:
   # Mesh-wide (root config namespace, no selector): every meshed workload must
   # speak mTLS. Rejects plaintext from any unmeshed pod, so the SPIFFE
