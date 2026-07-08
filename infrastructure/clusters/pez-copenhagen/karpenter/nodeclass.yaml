@@ -5,7 +5,7 @@ metadata:
 spec:
   bootDevice:
     size: 50G
-    storage: hdd
+    storage: local-lvm
   instanceTemplateRef:
     kind: ProxmoxTemplate
     name: default
@@ -22,6 +22,6 @@ spec:
     type: cdrom
   placementStrategy:
     zoneBalance: Balanced
-  region: pez-k8s
+  region: pez-copenhagen
   tags:
     - karpenter

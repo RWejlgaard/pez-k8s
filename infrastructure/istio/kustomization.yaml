@@ -7,6 +7,4 @@ resources:
   - istiod.yaml
   - cni.yaml
   - ztunnel.yaml
-  - ingressgateway.yaml
-  - shared-gateway.yaml
   - peer-authentication.yaml
