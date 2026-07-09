@@ -1,5 +1,5 @@
 # Self-managing "app of apps": ArgoCD reconciles its own install plus this
-# directory's loose Applications (infrastructure.yaml, this file).
+# directory's loose Applications (infrastructure.yaml, apps.yaml, this file).
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
