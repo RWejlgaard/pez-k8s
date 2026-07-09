@@ -7,7 +7,7 @@ each scaled out by Karpenter and each reconciled by its own
 
 | Cluster | Proxmox host | UI | Ingress hostnames |
 |---------|--------------|----|--------------------|
-| pez-london (formerly pez-k8s) | london-a.pez.sh | `https://argocd.lon.pez.sh` | `*.lon.pez.sh` |
+| pez-london | london-a.pez.sh | `https://argocd.lon.pez.sh` | `*.lon.pez.sh` |
 | pez-copenhagen | copenhagen-a.pez.sh | `https://argocd.cph.pez.sh` | `*.cph.pez.sh` |
 
 ## Layout
