@@ -5,7 +5,7 @@ metadata:
 spec:
   bootDevice:
     size: 50G
-    storage: hdd
+    storage: local-lvm
   instanceTemplateRef:
     kind: ProxmoxTemplate
     name: default
