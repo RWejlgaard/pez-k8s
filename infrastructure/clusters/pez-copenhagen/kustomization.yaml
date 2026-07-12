@@ -3,8 +3,9 @@ kind: Kustomization
 resources:
   - ../../istio
   - ../../sealed-secrets
-  - ../../grafana-cloud
   - ingressgateway.yaml
   - shared-gateway.yaml
-  - k8s-monitoring.yaml
   - karpenter
+# Monitoring disabled: k8s-monitoring.yaml and ../../grafana-cloud (namespace +
+# credentials SealedSecret) are still on disk, just not wired in. Re-add both
+# lines above to turn it back on.
