@@ -60,11 +60,38 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.pas
 | istio-ingressgateway | Pinned to `k8s-control-plane`, exposed on that cluster's Tailscale IP via `service.externalIPs` (TLS at Caddy). Labeled `istio.io/gateway-name: shared-gateway` to bind to the shared Gateway in manual-deployment mode. Per-cluster: `infrastructure/clusters/<cluster>/ingressgateway.yaml` |
 | shared-gateway | Gateway API `Gateway` (per-cluster hostname, port 8080) that apps attach to via `HTTPRoute`; replaces per-app Istio `Gateway`/`VirtualService`. Per-cluster: `infrastructure/clusters/<cluster>/shared-gateway.yaml` |
 | Karpenter config | `infrastructure/clusters/<cluster>/karpenter/` — `NodePool`/`ProxmoxNodeClass`/`ProxmoxTemplate` + the non-sensitive cloud-init `karpenter-template` Secret. The controller + CRDs are still Helm-managed out-of-band (see below) |
+| Sealed Secrets | Bitnami controller, shared across clusters via `infrastructure/sealed-secrets/`. Deployed as `sealed-secrets-controller` in `kube-system` (matches `kubeseal`'s zero-flag defaults). **Each cluster has its own independent keypair** — a `SealedSecret` encrypted for one cluster cannot be decrypted by the other. See "Sealing a secret" below |
 
 Each Istio Helm component (`infrastructure/istio/{base,istiod,cni,ztunnel}.yaml` +
 per-cluster `ingressgateway.yaml`) is its own ArgoCD `Application` with a
 `argocd.argoproj.io/sync-wave` annotation encoding the install order (base ->
 istiod -> cni -> ztunnel -> ingressgateway) that used to be Flux's `dependsOn`.
+
+### Sealing a secret
+
+Fetch the target cluster's public cert (safe to keep around locally, doesn't
+require ongoing cluster access to reuse) and seal against it:
+
+```sh
+kubeseal --context <cluster> --fetch-cert > <cluster>-cert.pem
+
+kubectl create secret generic <name> -n <namespace> --dry-run=client -o yaml \
+    --from-literal=key=value \
+  | kubeseal --cert <cluster>-cert.pem -o yaml > sealedsecret.yaml
+```
+
+Commit the resulting `SealedSecret` — it's only decryptable by the
+controller that owns the matching private key. See `pez-k8s-apps/README.md`
+for where a workload's `SealedSecret` manifest goes.
+
+Back up each cluster's controller private key somewhere outside git; losing
+it means losing the ability to decrypt that cluster's existing
+`SealedSecret`s:
+
+```sh
+kubectl get secret -n kube-system -l sealedsecrets.bitnami.com/sealed-secrets-key \
+  --context <cluster> -o yaml > <cluster>-sealed-secrets-key-backup.yaml
+```
 
 ## Managed outside ArgoCD (for now)
 
