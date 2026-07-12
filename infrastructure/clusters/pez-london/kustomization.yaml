@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
   - ../../istio
   - ../../sealed-secrets
+  - ../../grafana-cloud
   - ingressgateway.yaml
   - shared-gateway.yaml
+  - k8s-monitoring.yaml
   - karpenter

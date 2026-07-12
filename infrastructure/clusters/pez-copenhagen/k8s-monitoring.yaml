@@ -1,0 +1,72 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8s-monitoring
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: k8s-monitoring
+    targetRevision: "4.2.1"
+    helm:
+      values: |
+        cluster:
+          name: pez-copenhagen
+
+        # Single OTLP Gateway destination carries metrics, logs, and traces to
+        # Grafana Cloud over one endpoint/credential pair instead of separate
+        # Prometheus/Loki/Tempo destinations. Credentials come from the
+        # grafana-cloud-credentials SealedSecret (../../grafana-cloud), shared
+        # across clusters since both run the same sealed-secrets key.
+        destinations:
+          grafanaCloud:
+            type: otlp
+            url: https://otlp-gateway-prod-gb-south-1.grafana.net/otlp
+            auth:
+              type: basic
+              usernameKey: username
+              passwordKey: password
+            secret:
+              create: false
+              name: grafana-cloud-credentials
+              namespace: monitoring
+
+        clusterMetrics:
+          enabled: true
+        hostMetrics:
+          enabled: true
+        clusterEvents:
+          enabled: true
+        nodeLogs:
+          enabled: true
+        podLogsViaOpenTelemetry:
+          enabled: true
+        # Opens OTLP receivers for instrumented workloads to push traces/metrics/
+        # logs through Alloy. No app currently sends anything here; it's a no-op
+        # until a workload is instrumented with an OpenTelemetry SDK.
+        applicationObservability:
+          enabled: true
+
+        # Right-sized for this small homelab (1-vCPU / 2Gi worker nodes), same
+        # reasoning as infrastructure/istio/istiod.yaml and sealed-secrets.yaml.
+        collectorCommon:
+          alloy:
+            resources:
+              requests:
+                cpu: 100m
+                memory: 128Mi
+              limits:
+                cpu: 500m
+                memory: 512Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
