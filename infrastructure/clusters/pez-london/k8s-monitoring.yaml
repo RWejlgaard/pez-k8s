@@ -16,6 +16,18 @@ spec:
         cluster:
           name: pez-london
 
+        # Single DaemonSet collector, clustered so cluster-level features (e.g.
+        # kube-state-metrics scraping) can distribute work across the 4 nodes,
+        # with the presets each enabled feature below requires:
+        # filesystem-log-reader for nodeLogs, public-preview stability for
+        # podLogsViaOpenTelemetry (OTel-native log collection is still preview
+        # in Alloy).
+        collectors:
+          alloy:
+            presets: [daemonset, clustered, filesystem-log-reader]
+            alloy:
+              stabilityLevel: public-preview
+
         # Single OTLP Gateway destination carries metrics, logs, and traces to
         # Grafana Cloud over one endpoint/credential pair instead of separate
         # Prometheus/Loki/Tempo destinations. Credentials come from the
@@ -25,6 +37,8 @@ spec:
           grafanaCloud:
             type: otlp
             url: https://otlp-gateway-prod-gb-south-1.grafana.net/otlp
+            # Grafana Cloud's OTLP gateway requires HTTP; the chart defaults to gRPC.
+            protocol: http
             auth:
               type: basic
               usernameKey: username
@@ -36,8 +50,19 @@ spec:
 
         clusterMetrics:
           enabled: true
+        # Built-in kube-state-metrics deployment; clusterMetrics needs a
+        # kube-state-metrics source and none is already running in this cluster.
+        telemetryServices:
+          kube-state-metrics:
+            deploy: true
+
         hostMetrics:
           enabled: true
+          # Alloy's built-in host-metrics collection instead of scraping an
+          # external node-exporter Deployment — runs locally per DaemonSet pod,
+          # so (unlike the node-exporter source) it doesn't need clustering.
+          linuxHosts:
+            source: alloy
         clusterEvents:
           enabled: true
         nodeLogs:
@@ -49,6 +74,12 @@ spec:
         # until a workload is instrumented with an OpenTelemetry SDK.
         applicationObservability:
           enabled: true
+          receivers:
+            otlp:
+              grpc:
+                enabled: true
+              http:
+                enabled: true
 
         # Right-sized for this small homelab (1-vCPU / 2Gi worker nodes), same
         # reasoning as infrastructure/istio/istiod.yaml and sealed-secrets.yaml.
