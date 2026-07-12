@@ -1,0 +1,40 @@
+# Opts ArgoCD's metrics Services into k8s-monitoring's annotationAutodiscovery
+# feature (infrastructure/clusters/<cluster>/k8s-monitoring.yaml). Two of these
+# Services carry a second, non-metrics port, so those need portName to avoid
+# an ambiguous scrape target.
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-metrics
+  annotations:
+    k8s.grafana.com/scrape: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-server-metrics
+  annotations:
+    k8s.grafana.com/scrape: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-repo-server
+  annotations:
+    k8s.grafana.com/scrape: "true"
+    k8s.grafana.com/metrics.portName: metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-applicationset-controller
+  annotations:
+    k8s.grafana.com/scrape: "true"
+    k8s.grafana.com/metrics.portName: metrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-notifications-controller-metrics
+  annotations:
+    k8s.grafana.com/scrape: "true"

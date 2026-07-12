@@ -65,6 +65,11 @@ spec:
             source: alloy
         clusterEvents:
           enabled: true
+        # Scrapes any Pod/Service annotated k8s.grafana.com/scrape: "true" —
+        # e.g. ArgoCD's metrics Services (clusters/<cluster>/argocd/metrics-annotations-patch.yaml).
+        # Any future workload can opt in the same way.
+        annotationAutodiscovery:
+          enabled: true
         nodeLogs:
           enabled: true
         podLogsViaOpenTelemetry:

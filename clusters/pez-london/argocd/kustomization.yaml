@@ -10,3 +10,4 @@ resources:
   - route.yaml
 patches:
   - path: cmd-params-patch.yaml
+  - path: metrics-annotations-patch.yaml
