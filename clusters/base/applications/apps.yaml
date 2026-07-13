@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/RWejlgaard/pez-k8s-apps
     targetRevision: main
-    path: clusters/pez-copenhagen
+    path: clusters/CLUSTER
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:

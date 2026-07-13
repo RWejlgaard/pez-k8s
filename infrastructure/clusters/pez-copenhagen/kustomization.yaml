@@ -1,11 +1,49 @@
+# Everything that is actually different about pez-copenhagen lives here; the
+# manifests themselves are shared in ../base.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ../../istio
-  - ../../sealed-secrets
-  - ingressgateway.yaml
-  - shared-gateway.yaml
-  - karpenter
-# Monitoring disabled: k8s-monitoring.yaml and ../../grafana-cloud (namespace +
-# credentials SealedSecret) are still on disk, just not wired in. Re-add both
-# lines above to turn it back on.
+  - ../base
+patches:
+  # Tailscale IP that Caddy forwards to (TLS terminates at Caddy).
+  - target:
+      kind: Application
+      name: istio-ingressgateway
+    patch: |-
+      - op: replace
+        path: /spec/source/helm/valuesObject/service/externalIPs
+        value: ["100.109.200.2"]
+  - target:
+      kind: Gateway
+      name: shared-gateway
+    patch: |-
+      - op: replace
+        path: /spec/listeners/0/hostname
+        value: "*.cph.pez.sh"
+  # Must match region in the out-of-band karpenter-provider-proxmox secret.
+  - target:
+      kind: ProxmoxNodeClass
+      name: default
+    patch: |-
+      - op: replace
+        path: /spec/region
+        value: pez-copenhagen
+  # Fleet ceiling: copenhagen-a has 32 vCPU / 64Gi total, leave headroom for
+  # the control plane and hypervisor itself.
+  - target:
+      kind: NodePool
+      name: default
+    patch: |-
+      - op: replace
+        path: /spec/limits
+        value:
+          cpu: "32"
+          memory: 60Gi
+  # Uncomment together with k8s-monitoring.yaml in ../base/kustomization.yaml.
+  # - target:
+  #     kind: Application
+  #     name: k8s-monitoring
+  #   patch: |-
+  #     - op: replace
+  #       path: /spec/source/helm/valuesObject/cluster/name
+  #       value: pez-copenhagen

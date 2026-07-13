@@ -22,6 +22,9 @@ spec:
     type: cdrom
   placementStrategy:
     zoneBalance: Balanced
-  region: pez-copenhagen
+  # Placeholder, patched to the cluster name by
+  # infrastructure/clusters/<cluster>/kustomization.yaml. Must match region in
+  # the out-of-band karpenter-provider-proxmox secret.
+  region: CLUSTER
   tags:
     - karpenter

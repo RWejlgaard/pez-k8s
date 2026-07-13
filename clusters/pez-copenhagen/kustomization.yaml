@@ -1,0 +1,31 @@
+# Everything the root Application syncs for pez-copenhagen: the ArgoCD install
+# (argocd/, hostname already patched there) and the three bootstrap
+# Applications from the shared base, with their CLUSTER placeholder paths
+# patched to this cluster.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - argocd
+  - ../base/applications
+patches:
+  - target:
+      kind: Application
+      name: root
+    patch: |-
+      - op: replace
+        path: /spec/source/path
+        value: clusters/pez-copenhagen
+  - target:
+      kind: Application
+      name: infrastructure
+    patch: |-
+      - op: replace
+        path: /spec/source/path
+        value: infrastructure/clusters/pez-copenhagen
+  - target:
+      kind: Application
+      name: apps
+    patch: |-
+      - op: replace
+        path: /spec/source/path
+        value: clusters/pez-copenhagen

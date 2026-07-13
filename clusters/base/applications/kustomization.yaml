@@ -1,0 +1,9 @@
+# The three bootstrap Applications every cluster runs. Source paths contain a
+# CLUSTER placeholder, patched to the real cluster name by the overlay at
+# clusters/<cluster>/kustomization.yaml.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - root.yaml
+  - infrastructure.yaml
+  - apps.yaml

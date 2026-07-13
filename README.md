@@ -12,27 +12,35 @@ each scaled out by Karpenter and each reconciled by its own
 
 ## Layout
 
+Everything is shared in a `base/`, and each cluster is a small kustomize
+overlay holding only what genuinely differs there (hostnames, the Tailscale
+ingress IP, Karpenter region and fleet ceiling):
+
 ```
 clusters/
+  base/
+    argocd/              # ArgoCD install + UI HTTPRoute (placeholder hostname)
+    applications/        # root.yaml (self-managing "app of apps"),
+                         # infrastructure.yaml, apps.yaml (placeholder paths)
   pez-london/
-    argocd/              # ArgoCD install + HTTPRoute
-    root.yaml            # Self-managing "app of apps"
-    infrastructure.yaml  # -> infrastructure/clusters/pez-london
-    apps.yaml             # -> pez-k8s-apps repo
-  pez-copenhagen/
-    argocd/
-    root.yaml
-    infrastructure.yaml  # -> infrastructure/clusters/pez-copenhagen
+    argocd/kustomization.yaml   # base/argocd + UI hostname patch
+    kustomization.yaml          # argocd/ + base/applications + path patches
+  pez-copenhagen/               # same two files
 infrastructure/
-  istio/                # shared ambient-mesh base
+  istio/                 # shared ambient-mesh base
   clusters/
-    pez-london/          # ingress gateway, Gateway hostname, karpenter/
-    pez-copenhagen/
+    base/                # ingress gateway, shared Gateway, karpenter/
+    pez-london/kustomization.yaml     # IP, hostname, region, fleet-ceiling patches
+    pez-copenhagen/kustomization.yaml
 ```
 
+Each cluster's `root` Application syncs `clusters/<cluster>/` (one kustomize
+source), which renders the ArgoCD install plus the three bootstrap
+Applications with their paths patched to that cluster.
+
 Workloads live in a separate repo:
-[`pez-k8s-apps`](https://github.com/RWejlgaard/pez-k8s-apps) — currently only
-wired up to pez-london via `clusters/pez-london/apps.yaml`.
+[`pez-k8s-apps`](https://github.com/RWejlgaard/pez-k8s-apps), wired to each
+cluster via the `apps` Application.
 
 ## Bootstrap (one-time, on a fresh cluster)
 
@@ -42,7 +50,7 @@ kubecontext, substituting `pez-london` or `pez-copenhagen`:
 
 ```sh
 kubectl apply -k clusters/<cluster>/argocd   # installs ArgoCD, --insecure mode, the UI route
-kubectl apply -f clusters/<cluster>/root.yaml  # ArgoCD takes over from here
+kubectl apply -k clusters/<cluster>          # adds the bootstrap Applications; ArgoCD takes over
 ```
 
 Fetch the initial admin password (rotate it after logging in):
@@ -57,11 +65,11 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.pas
 |-----------|-------|
 | Gateway API CRDs | Standard channel, pinned in `infrastructure/istio/kustomization.yaml`; required by the `istio` GatewayClass and `shared-gateway` |
 | Istio base / istiod / cni / ztunnel | Ambient mesh (`profile: ambient`), `global.platform: k3s` for CNI paths. Shared across clusters via `infrastructure/istio/` |
-| istio-ingressgateway | Pinned to `k8s-control-plane`, exposed on that cluster's Tailscale IP via `service.externalIPs` (TLS at Caddy). Labeled `istio.io/gateway-name: shared-gateway` to bind to the shared Gateway in manual-deployment mode. Per-cluster: `infrastructure/clusters/<cluster>/ingressgateway.yaml` |
-| shared-gateway | Gateway API `Gateway` (per-cluster hostname, port 8080) that apps attach to via `HTTPRoute`; replaces per-app Istio `Gateway`/`VirtualService`. Per-cluster: `infrastructure/clusters/<cluster>/shared-gateway.yaml` |
-| Karpenter config | `infrastructure/clusters/<cluster>/karpenter/` — `NodePool`/`ProxmoxNodeClass`/`ProxmoxTemplate` + the non-sensitive cloud-init `karpenter-template` Secret. The controller + CRDs are still Helm-managed out-of-band (see below) |
+| istio-ingressgateway | Pinned to `k8s-control-plane`, exposed on that cluster's Tailscale IP via `service.externalIPs` (TLS at Caddy). Labeled `istio.io/gateway-name: shared-gateway` to bind to the shared Gateway in manual-deployment mode. Base: `infrastructure/clusters/base/ingressgateway.yaml`; IP patched per cluster |
+| shared-gateway | Gateway API `Gateway` (port 8080) that apps attach to via `HTTPRoute`; replaces per-app Istio `Gateway`/`VirtualService`. Base: `infrastructure/clusters/base/shared-gateway.yaml`; wildcard hostname patched per cluster |
+| Karpenter config | `infrastructure/clusters/base/karpenter/`: `NodePool`/`ProxmoxNodeClass`/`ProxmoxTemplate` + the non-sensitive cloud-init `karpenter-template` Secret. Region and fleet ceiling patched per cluster. The controller + CRDs are still Helm-managed out-of-band (see below) |
 | Sealed Secrets | Bitnami controller, shared across clusters via `infrastructure/sealed-secrets/`. Deployed as `sealed-secrets-controller` in `kube-system` (matches `kubeseal`'s zero-flag defaults). **Both clusters share one keypair** (pez-copenhagen was seeded with pez-london's key, its own auto-generated key deleted) — a `SealedSecret` sealed against either cluster decrypts on both. This trades per-cluster isolation for being able to commit one `SealedSecret` that deploys unmodified everywhere; see "Sealing a secret" below |
-| Kubernetes Monitoring | Grafana's `k8s-monitoring` Alloy chart, per-cluster (`infrastructure/clusters/<cluster>/k8s-monitoring.yaml`, since `cluster.name` differs) in the `monitoring` namespace. Ships cluster/host metrics, cluster events, node + pod logs, and an OTLP receiver for app traces/metrics/logs, all through a single Grafana Cloud OTLP Gateway destination. Credentials: `grafana-cloud-credentials` `SealedSecret` shared across clusters, `infrastructure/grafana-cloud/` |
+| Kubernetes Monitoring | Grafana's `k8s-monitoring` Alloy chart (`infrastructure/clusters/base/k8s-monitoring.yaml`, `cluster.name` patched per cluster; currently unwired, see the base kustomization) in the `monitoring` namespace. Ships cluster/host metrics, cluster events, node + pod logs, and an OTLP receiver for app traces/metrics/logs, all through a single Grafana Cloud OTLP Gateway destination. Credentials: `grafana-cloud-credentials` `SealedSecret` shared across clusters, `infrastructure/grafana-cloud/` |
 
 Each Istio Helm component (`infrastructure/istio/{base,istiod,cni,ztunnel}.yaml` +
 per-cluster `ingressgateway.yaml`) is its own ArgoCD `Application` with a
@@ -98,6 +106,19 @@ kubectl get secret -n kube-system -l sealedsecrets.bitnami.com/sealed-secrets-ke
 
 Store that file somewhere durable and *not* in this git repo (a password
 manager or an encrypted archive), then delete the local copy.
+
+## Adding a cluster
+
+Copy an existing cluster overlay pair and change the values in the patches:
+
+1. `clusters/<new-cluster>/` (two kustomizations: ArgoCD UI hostname patch +
+   the three Application path patches)
+2. `infrastructure/clusters/<new-cluster>/kustomization.yaml` (Tailscale IP,
+   wildcard hostname, Karpenter region, fleet ceiling)
+3. `clusters/<new-cluster>/` in the `pez-k8s-apps` repo (see its README)
+4. Out-of-band: install the Karpenter controller via Helm, apply the two
+   Karpenter secrets, seed the sealed-secrets keypair (see below), then run
+   the bootstrap commands above.
 
 ## Managed outside ArgoCD (for now)
 

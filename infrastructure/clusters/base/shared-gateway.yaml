@@ -21,7 +21,9 @@ spec:
     - name: http
       port: 80
       protocol: HTTP
-      hostname: "*.cph.pez.sh"
+      # Placeholder, patched to the cluster's real wildcard hostname by
+      # infrastructure/clusters/<cluster>/kustomization.yaml.
+      hostname: "*.cluster.invalid"
       allowedRoutes:
         namespaces:
           from: All

@@ -1,8 +1,8 @@
 name: validate
 
-# Pre-merge guard: render and schema-validate every manifest before Flux ever
-# sees it, so a broken kustomization or bad CR fails here instead of silently
-# stalling reconciliation on the live cluster.
+# Pre-merge guard: render and schema-validate every manifest before ArgoCD
+# ever sees it, so a broken kustomization or bad CR fails here instead of
+# failing sync on the live cluster.
 
 on:
   pull_request:

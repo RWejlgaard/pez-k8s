@@ -1,0 +1,15 @@
+# Shared per-cluster infrastructure. Cluster-specific values (Tailscale IP,
+# wildcard hostname, Karpenter region and fleet ceiling) are placeholders here,
+# patched by infrastructure/clusters/<cluster>/kustomization.yaml.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../istio
+  - ../../sealed-secrets
+  - ingressgateway.yaml
+  - shared-gateway.yaml
+  - karpenter
+# Monitoring disabled: k8s-monitoring.yaml and ../../grafana-cloud (namespace +
+# credentials SealedSecret) are still on disk, just not wired in. To turn it
+# back on, add both here and uncomment the cluster.name patch in each cluster
+# overlay.

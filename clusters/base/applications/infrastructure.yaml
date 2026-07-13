@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: https://github.com/RWejlgaard/pez-k8s.git
     targetRevision: main
-    path: infrastructure/clusters/pez-london
+    path: infrastructure/clusters/CLUSTER
   destination:
     server: https://kubernetes.default.svc
   syncPolicy:

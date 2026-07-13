@@ -12,7 +12,9 @@ spec:
     chart: gateway
     targetRevision: "1.30.2"
     helm:
-      values: |
+      # valuesObject (not a values string) so the cluster overlays can patch
+      # individual fields, currently just the Tailscale externalIP.
+      valuesObject:
         # Bind this Helm-managed proxy to the Gateway API `shared-gateway` (manual
         # deployment mode). istiod programs the proxy pods that carry this label
         # with the listeners/routes from that Gateway. Applied to all chart
@@ -25,8 +27,10 @@ spec:
         # k3s servicelb binding every node's LAN IP.
         service:
           type: ClusterIP
+          # Placeholder (TEST-NET-1), patched to the cluster's Tailscale IP by
+          # infrastructure/clusters/<cluster>/kustomization.yaml.
           externalIPs:
-            - 100.123.97.26
+            - 192.0.2.1
           # Gateway runs unprivileged and listens on 8080/8443 (istiod won't program
           # privileged ports <1024 for an unprivileged pod). Map external 80/443 to
           # those targetPorts; the Gateway resources bind 8080.

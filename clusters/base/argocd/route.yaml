@@ -1,5 +1,3 @@
-# TLS terminates at Caddy (same pattern as istio-ingressgateway), so argocd-server
-# only needs to speak plain HTTP behind the shared gateway.
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -12,7 +10,8 @@ spec:
       name: shared-gateway
       namespace: istio-system
   hostnames:
-    - argocd.cph.pez.sh
+    # Placeholder, patched to the real hostname by clusters/<cluster>/argocd/.
+    - argocd.cluster.invalid
   rules:
     - matches:
         - path:

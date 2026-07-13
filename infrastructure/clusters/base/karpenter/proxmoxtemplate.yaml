@@ -23,6 +23,10 @@ spec:
   sourceImage:
     imageName: ubuntu-resolute-amd64.qcow2
     url: https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img
+  # local-lvm (lvmthin) can't hold the downloaded source image/template, it only
+  # supports rootdir/images, not the "import" content type the provider needs.
+  # local (dir) supports both; actual node boot disks still land on local-lvm
+  # via ProxmoxNodeClass.bootDevice.storage.
   storageIDs:
     - local
   tags:

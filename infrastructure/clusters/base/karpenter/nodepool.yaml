@@ -10,7 +10,9 @@ spec:
       - nodes: 10%
     consolidateAfter: 1m
     consolidationPolicy: WhenEmptyOrUnderutilized
-  # Fleet ceiling for this homelab: never provision past 15 vCPU / 30Gi.
+  # Fleet ceiling, sized per site and patched by
+  # infrastructure/clusters/<cluster>/kustomization.yaml. Base values are a
+  # conservative default.
   limits:
     cpu: "15"
     memory: 30Gi

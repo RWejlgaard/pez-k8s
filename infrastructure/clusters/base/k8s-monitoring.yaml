@@ -12,9 +12,13 @@ spec:
     chart: k8s-monitoring
     targetRevision: "4.2.1"
     helm:
-      values: |
+      # valuesObject (not a values string) so the cluster overlays can patch
+      # individual fields, currently just cluster.name.
+      valuesObject:
         cluster:
-          name: pez-london
+          # Placeholder, patched per cluster (see the commented-out patch in
+          # infrastructure/clusters/<cluster>/kustomization.yaml).
+          name: CLUSTER
 
         # Single DaemonSet collector, clustered so cluster-level features (e.g.
         # kube-state-metrics scraping) can distribute work across the 4 nodes,

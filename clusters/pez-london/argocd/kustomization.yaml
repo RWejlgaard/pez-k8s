@@ -1,13 +1,15 @@
+# ArgoCD install for pez-london: the shared base plus this cluster's UI
+# hostname. Applied directly with kubectl during bootstrap, self-managed by
+# the root Application afterwards (via clusters/pez-london/kustomization.yaml).
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: argocd
 resources:
-  - namespace.yaml
-  # Pinned upstream install manifest (non-HA: single control-plane node, no need
-  # for the ha/ variant). Same "pin a remote URL by tag" convention as the
-  # Gateway API CRDs in infrastructure/istio/kustomization.yaml.
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.4.4/manifests/install.yaml
-  - route.yaml
+  - ../../base/argocd
 patches:
-  - path: cmd-params-patch.yaml
-  - path: metrics-annotations-patch.yaml
+  - target:
+      kind: HTTPRoute
+      name: argocd-server
+    patch: |-
+      - op: replace
+        path: /spec/hostnames
+        value: ["argocd.lon.pez.sh"]

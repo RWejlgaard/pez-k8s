@@ -3,12 +3,10 @@
 # Validate every manifest and kustomize overlay in this repo against its JSON
 # schema, mirroring what ArgoCD's repo-server does before it applies.
 #
-# Two passes:
-#   1. kubeconform the loose ArgoCD Application CRs under ./clusters/<cluster>/
-#      that are applied directly (the root Application's "app of apps" bootstrap
-#      set), not built by kustomize.
-#   2. `kustomize build` every directory that owns a kustomization.yaml and pipe
-#      the rendered output through kubeconform.
+# Single pass: `kustomize build` every directory that owns a kustomization.yaml
+# (bases and cluster overlays alike) and pipe the rendered output through
+# kubeconform. Every manifest in the repo, including the ArgoCD Application
+# CRs, belongs to some kustomization now, nothing is applied loose.
 #
 # Schemas: the Kubernetes defaults and the community CRDs-catalog (Istio,
 # Gateway API, Karpenter, ArgoCD's Application/AppProject). Anything still
@@ -33,12 +31,6 @@ kubeconform_flags=(
   "-schema-location" "https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json"
   "-verbose"
 )
-
-echo "INFO - Validating cluster ArgoCD resources"
-find ./clusters -maxdepth 2 -type f -name '*.yaml' -print0 | while IFS= read -r -d $'\0' file; do
-  echo "INFO - Validating ${file}"
-  kubeconform "${kubeconform_flags[@]}" "${file}"
-done
 
 echo "INFO - Validating kustomizations"
 find . -type f -name "${kustomize_config}" -print0 | while IFS= read -r -d $'\0' file; do
