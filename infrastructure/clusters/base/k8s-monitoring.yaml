@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://grafana.github.io/helm-charts
     chart: k8s-monitoring
-    targetRevision: "4.2.1"
+    targetRevision: "4.2.2"
     helm:
       # valuesObject (not a values string) so the cluster overlays can patch
       # individual fields, currently just cluster.name.
