@@ -1,0 +1,53 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "argocd": {
+    "managerFilePatterns": [
+      "/^infrastructure/istio/base\\.yaml$/",
+      "/^infrastructure/istio/istiod\\.yaml$/",
+      "/^infrastructure/istio/cni\\.yaml$/",
+      "/^infrastructure/istio/ztunnel\\.yaml$/",
+      "/^infrastructure/sealed-secrets/sealed-secrets\\.yaml$/",
+      "/^infrastructure/clusters/base/k8s-monitoring\\.yaml$/"
+    ]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^infrastructure/istio/kustomization\\.yaml$/"],
+      "matchStrings": [
+        "gateway-api/releases/download/v(?<currentValue>[^/]+)/standard-install\\.yaml"
+      ],
+      "depNameTemplate": "kubernetes-sigs/gateway-api",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^clusters/base/argocd/kustomization\\.yaml$/"],
+      "matchStrings": [
+        "argo-cd/v(?<currentValue>[^/]+)/manifests/install\\.yaml"
+      ],
+      "depNameTemplate": "argoproj/argo-cd",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/validate\\.yaml$/"],
+      "matchStrings": [
+        "KUSTOMIZE_VERSION: \"(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "kubernetes-sigs/kustomize",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^kustomize/v(?<version>.+)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/validate\\.yaml$/"],
+      "matchStrings": [
+        "KUBECONFORM_VERSION: \"(?<currentValue>[^\"]+)\""
+      ],
+      "depNameTemplate": "yannh/kubeconform",
+      "datasourceTemplate": "github-releases"
+    }
+  ]
+}
