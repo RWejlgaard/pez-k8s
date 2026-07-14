@@ -6,7 +6,7 @@ resources:
   # Pinned upstream install manifest (non-HA: single control-plane node, no need
   # for the ha/ variant). Same "pin a remote URL by tag" convention as the
   # Gateway API CRDs in infrastructure/istio/kustomization.yaml.
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.4.4/manifests/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.4.5/manifests/install.yaml
   - route.yaml
 patches:
   - path: cmd-params-patch.yaml
