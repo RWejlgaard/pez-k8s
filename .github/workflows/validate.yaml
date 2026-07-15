@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       KUSTOMIZE_VERSION: "5.4.3"
-      KUBECONFORM_VERSION: "0.6.7"
+      KUBECONFORM_VERSION: "0.8.0"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
