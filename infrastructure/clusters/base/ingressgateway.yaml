@@ -50,7 +50,6 @@ spec:
           - key: node-role.kubernetes.io/control-plane
             operator: Exists
             effect: NoSchedule
-        # Lightweight request so it fits the resource-constrained control-plane.
         resources:
           requests:
             cpu: 10m
