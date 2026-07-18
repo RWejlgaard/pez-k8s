@@ -20,6 +20,7 @@ spec:
       model: virtio
       mtu: 1500
       firewall: true
+  onBoot: true
   sourceImage:
     imageName: ubuntu-resolute-amd64.qcow2
     url: https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64.img

@@ -123,7 +123,7 @@ Copy an existing cluster overlay pair and change the values in the patches:
 ## Managed outside ArgoCD (for now)
 
 - **Karpenter controller** — the `karpenter-provider-proxmox` controller and its
-  CRDs are still installed via Helm (chart 0.4.7 / app v0.11.0) directly on each
+  CRDs are still installed via Helm (chart 0.4.9 / app v0.12.0) directly on each
   cluster; the declarative node-fleet config it consumes lives in
   `infrastructure/clusters/<cluster>/karpenter/`. Folding the controller itself
   into an ArgoCD `Application` is the remaining step.
