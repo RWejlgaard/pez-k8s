@@ -1,19 +1,5 @@
 #!/usr/bin/env bash
 
-# Validate every manifest and kustomize overlay in this repo against its JSON
-# schema, mirroring what ArgoCD's repo-server does before it applies.
-#
-# Single pass: `kustomize build` every directory that owns a kustomization.yaml
-# (bases and cluster overlays alike) and pipe the rendered output through
-# kubeconform. Every manifest in the repo, including the ArgoCD Application
-# CRs, belongs to some kustomization now, nothing is applied loose.
-#
-# Schemas: the Kubernetes defaults and the community CRDs-catalog (Istio,
-# Gateway API, Karpenter, ArgoCD's Application/AppProject). Anything still
-# unknown is skipped via -ignore-missing-schemas rather than failing the build.
-#
-# Requires: kustomize, kubeconform, curl, tar.
-
 set -o errexit
 set -o pipefail
 
