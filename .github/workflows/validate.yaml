@@ -17,7 +17,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     env:
-      KUSTOMIZE_VERSION: "5.4.3"
+      KUSTOMIZE_VERSION: "5.8.1"
       KUBECONFORM_VERSION: "0.8.0"
     steps:
       - name: Checkout
