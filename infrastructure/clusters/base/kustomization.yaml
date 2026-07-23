@@ -6,6 +6,7 @@ kind: Kustomization
 resources:
   - ../../istio
   - ../../sealed-secrets
+  - ../../nfs-csi
   - ingressgateway.yaml
   - shared-gateway.yaml
   - karpenter
