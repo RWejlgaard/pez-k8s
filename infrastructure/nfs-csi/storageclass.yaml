@@ -1,0 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-csi
+provisioner: nfs.csi.k8s.io
+parameters:
+  # Placeholder (TEST-NET-1), patched to the cluster's Proxmox host NFS IP by
+  # infrastructure/clusters/<cluster>/kustomization.yaml.
+  server: 192.0.2.1
+  share: /srv/proxmox-nfs
+  subDir: "${pvc.metadata.namespace}-${pvc.metadata.name}"
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+mountOptions:
+  - nfsvers=4.1

@@ -20,6 +20,14 @@ patches:
       - op: replace
         path: /spec/listeners/0/hostname
         value: "*.cph.pez.sh"
+  # NFS server IP: copenhagen-a's real LAN address on vmbr0.
+  - target:
+      kind: StorageClass
+      name: nfs-csi
+    patch: |-
+      - op: replace
+        path: /parameters/server
+        value: 192.168.0.253
   # Must match region in the out-of-band karpenter-provider-proxmox secret.
   - target:
       kind: ProxmoxNodeClass
