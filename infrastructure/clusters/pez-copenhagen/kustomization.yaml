@@ -28,6 +28,34 @@ patches:
       - op: replace
         path: /parameters/server
         value: 192.168.0.253
+  # TCP passthrough for the minecraft app (apps/minecraft in pez-k8s-apps).
+  # Only copenhagen runs it today, so the listener + matching service port
+  # live here rather than in base.
+  - target:
+      kind: Gateway
+      name: shared-gateway
+    patch: |-
+      - op: add
+        path: /spec/listeners/-
+        value:
+          name: minecraft
+          port: 25565
+          protocol: TCP
+          allowedRoutes:
+            kinds:
+              - kind: TCPRoute
+            namespaces:
+              from: All
+  - target:
+      kind: Application
+      name: istio-ingressgateway
+    patch: |-
+      - op: add
+        path: /spec/source/helm/valuesObject/service/ports/-
+        value:
+          name: tcp-minecraft
+          port: 25565
+          targetPort: 25565
   # Must match region in the out-of-band karpenter-provider-proxmox secret.
   - target:
       kind: ProxmoxNodeClass
