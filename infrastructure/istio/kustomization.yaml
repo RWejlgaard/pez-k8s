@@ -1,7 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.1/standard-install.yaml
+  # Experimental channel (not standard): istiod 1.30's alpha Gateway API
+  # support (PILOT_ENABLE_ALPHA_GATEWAY_API, needed for the minecraft
+  # TCPRoute) watches the legacy v1alpha2 TCPRoute/UDPRoute API. The standard
+  # channel only serves v1 for those kinds, which leaves istiod's informer
+  # stuck retrying a nonexistent resource version forever. Experimental adds
+  # v1alpha2 back (served, not storage) alongside v1 — no CRDs removed.
+  - https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.1/experimental-install.yaml
   - namespace.yaml
   - base.yaml
   - istiod.yaml
