@@ -63,13 +63,13 @@ spec:
         hostMetrics:
           enabled: true
           # Alloy's built-in host-metrics collection instead of scraping an
-          # external node-exporter Deployment — runs locally per DaemonSet pod,
+          # external node-exporter Deployment - runs locally per DaemonSet pod,
           # so (unlike the node-exporter source) it doesn't need clustering.
           linuxHosts:
             source: alloy
         clusterEvents:
           enabled: true
-        # Scrapes any Pod/Service annotated k8s.grafana.com/scrape: "true" —
+        # Scrapes any Pod/Service annotated k8s.grafana.com/scrape: "true" -
         # e.g. ArgoCD's metrics Services (clusters/<cluster>/argocd/metrics-annotations-patch.yaml).
         # Any future workload can opt in the same way.
         annotationAutodiscovery:

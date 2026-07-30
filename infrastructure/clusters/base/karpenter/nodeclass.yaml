@@ -10,7 +10,7 @@ spec:
     kind: ProxmoxTemplate
     name: default
   # Cloud-init metadata: render the `karpenter-template` templates (cloud-init.yaml)
-  # with the values from `karpenter-template-values` (kept out of git — join token),
+  # with the values from `karpenter-template-values` (kept out of git - join token),
   # delivered to the VM as a cdrom (nocloud) datasource.
   metadataOptions:
     templatesRef:

@@ -15,7 +15,7 @@ spec:
     server: https://kubernetes.default.svc
     namespace: istio-system
   # istiod (field manager "pilot-discovery") patches this webhook's caBundle
-  # and flips failurePolicy Ignore->Fail once it's ready to serve — ignore
+  # and flips failurePolicy Ignore->Fail once it's ready to serve - ignore
   # whatever that manager owns rather than enumerating fields, since Istio has
   # changed exactly which fields it patches across versions.
   ignoreDifferences:

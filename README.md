@@ -1,6 +1,6 @@
 # pez-k8s
 
-Multi-cluster GitOps repository (repo name predates the second cluster — kept
+Multi-cluster GitOps repository (repo name predates the second cluster - kept
 as-is). Currently hosts config for two independent k3s-on-Proxmox clusters,
 each scaled out by Karpenter and each reconciled by its own
 [ArgoCD](https://argo-cd.readthedocs.io) instance:
@@ -68,7 +68,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.pas
 | istio-ingressgateway | Pinned to `k8s-control-plane`, exposed on that cluster's Tailscale IP via `service.externalIPs` (TLS at Caddy). Labeled `istio.io/gateway-name: shared-gateway` to bind to the shared Gateway in manual-deployment mode. Base: `infrastructure/clusters/base/ingressgateway.yaml`; IP patched per cluster |
 | shared-gateway | Gateway API `Gateway` (port 8080) that apps attach to via `HTTPRoute`; replaces per-app Istio `Gateway`/`VirtualService`. Base: `infrastructure/clusters/base/shared-gateway.yaml`; wildcard hostname patched per cluster |
 | Karpenter config | `infrastructure/clusters/base/karpenter/`: `NodePool`/`ProxmoxNodeClass`/`ProxmoxTemplate` + the non-sensitive cloud-init `karpenter-template` Secret. Region and fleet ceiling patched per cluster. The controller + CRDs are still Helm-managed out-of-band (see below) |
-| Sealed Secrets | Bitnami controller, shared across clusters via `infrastructure/sealed-secrets/`. Deployed as `sealed-secrets-controller` in `kube-system` (matches `kubeseal`'s zero-flag defaults). **Both clusters share one keypair** (pez-copenhagen was seeded with pez-london's key, its own auto-generated key deleted) — a `SealedSecret` sealed against either cluster decrypts on both. This trades per-cluster isolation for being able to commit one `SealedSecret` that deploys unmodified everywhere; see "Sealing a secret" below |
+| Sealed Secrets | Bitnami controller, shared across clusters via `infrastructure/sealed-secrets/`. Deployed as `sealed-secrets-controller` in `kube-system` (matches `kubeseal`'s zero-flag defaults). **Both clusters share one keypair** (pez-copenhagen was seeded with pez-london's key, its own auto-generated key deleted) - a `SealedSecret` sealed against either cluster decrypts on both. This trades per-cluster isolation for being able to commit one `SealedSecret` that deploys unmodified everywhere; see "Sealing a secret" below |
 | Kubernetes Monitoring | Grafana's `k8s-monitoring` Alloy chart (`infrastructure/clusters/base/k8s-monitoring.yaml`, `cluster.name` patched per cluster; currently unwired, see the base kustomization) in the `monitoring` namespace. Ships cluster/host metrics, cluster events, node + pod logs, and an OTLP receiver for app traces/metrics/logs, all through a single Grafana Cloud OTLP Gateway destination. Credentials: `grafana-cloud-credentials` `SealedSecret` shared across clusters, `infrastructure/grafana-cloud/` |
 
 Each Istio Helm component (`infrastructure/istio/{base,istiod,cni,ztunnel}.yaml` +
@@ -93,7 +93,7 @@ kubectl create secret generic <name> -n <namespace> --dry-run=client -o yaml \
 Commit the resulting `SealedSecret`. See `pez-k8s-apps/README.md` for where
 a workload's `SealedSecret` manifest goes.
 
-**Back up the shared controller private key somewhere outside git** —
+**Back up the shared controller private key somewhere outside git** -
 losing it means losing the ability to decrypt every `SealedSecret` on both
 clusters, since there's now only one copy of this key in existence
 (pez-copenhagen's original auto-generated key was deleted when it was
@@ -122,12 +122,12 @@ Copy an existing cluster overlay pair and change the values in the patches:
 
 ## Managed outside ArgoCD (for now)
 
-- **Karpenter controller** — the `karpenter-provider-proxmox` controller and its
+- **Karpenter controller** - the `karpenter-provider-proxmox` controller and its
   CRDs are still installed via Helm (chart 0.4.9 / app v0.12.0) directly on each
   cluster; the declarative node-fleet config it consumes lives in
   `infrastructure/clusters/<cluster>/karpenter/`. Folding the controller itself
   into an ArgoCD `Application` is the remaining step.
-- **Secrets** — the Proxmox API credentials (`karpenter-provider-proxmox`) and
+- **Secrets** - the Proxmox API credentials (`karpenter-provider-proxmox`) and
   the k3s join token (`karpenter-template-values`, referenced by the
   `ProxmoxNodeClass` `metadataOptions`) are applied directly to each cluster and
   intentionally kept out of git. Each cluster's Proxmox `region` (in its

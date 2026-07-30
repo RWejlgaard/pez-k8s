@@ -1,5 +1,5 @@
 # Cloud-init templates rendered per-node by the ProxmoxNodeClass (nodeclass.yaml).
-# These are pure Go templates — the actual secret values (SSH keys, K3sToken,
+# These are pure Go templates - the actual secret values (SSH keys, K3sToken,
 # K3sURL) are interpolated at render time from `karpenter-template-values`, which
 # stays out of git. Safe to commit as-is.
 apiVersion: v1

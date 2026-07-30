@@ -5,8 +5,8 @@ kind: Kustomization
 # chart 0.4.9 / app v0.12.0), which also provides the CRDs these depend on.
 #
 # Deliberately NOT in git (applied directly to the cluster):
-#   - secret/karpenter-provider-proxmox (kube-system) — Proxmox API credentials
-#   - secret/karpenter-template-values  (kube-system) — holds the real K3sToken
+#   - secret/karpenter-provider-proxmox (kube-system) - Proxmox API credentials
+#   - secret/karpenter-template-values  (kube-system) - holds the real K3sToken
 #     join token (referenced by nodeclass.yaml via metadataOptions.valuesRef)
 resources:
   - nodepool.yaml

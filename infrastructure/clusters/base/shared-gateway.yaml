@@ -7,7 +7,7 @@ metadata:
     # Must sync after istiod (wave 1, needed for TCP listener support) and
     # istio-ingressgateway (wave 4, needed for the Service's ports incl.
     # 25565). Argo gates each wave on the previous one's health, and a Gateway
-    # counts healthy only once its listeners are Programmed — so if this ever
+    # counts healthy only once its listeners are Programmed - so if this ever
     # syncs at/before those waves, an unready listener (e.g. a new TCP one)
     # can permanently block the whole app-of-apps sync.
     argocd.argoproj.io/sync-wave: "6"
@@ -23,7 +23,7 @@ spec:
       value: istio-ingressgateway.istio-system.svc.cluster.local
   listeners:
     # Bound to the proxy Service via `addresses`, so `port` is the SERVICE port
-    # (80), which istiod resolves through the Service's targetPort (8080) — the
+    # (80), which istiod resolves through the Service's targetPort (8080) - the
     # unprivileged port the proxy actually binds. TLS terminates at Caddy, so
     # this is plain HTTP.
     - name: http
