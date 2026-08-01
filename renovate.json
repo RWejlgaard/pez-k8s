@@ -3,12 +3,8 @@
   "extends": ["config:recommended"],
   "argocd": {
     "managerFilePatterns": [
-      "/^infrastructure/istio/base\\.yaml$/",
-      "/^infrastructure/istio/istiod\\.yaml$/",
-      "/^infrastructure/istio/cni\\.yaml$/",
-      "/^infrastructure/istio/ztunnel\\.yaml$/",
-      "/^infrastructure/sealed-secrets/sealed-secrets\\.yaml$/",
-      "/^infrastructure/clusters/base/k8s-monitoring\\.yaml$/"
+      "/^infrastructure/.*\\.yaml$/",
+      "/^clusters/.*\\.yaml$/"
     ]
   },
   "customManagers": [
