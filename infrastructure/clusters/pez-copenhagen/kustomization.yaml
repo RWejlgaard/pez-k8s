@@ -28,16 +28,6 @@ patches:
       - op: replace
         path: /parameters/server
         value: 192.168.0.253
-  - target:
-      kind: Application
-      name: istio-ingressgateway
-    patch: |-
-      - op: add
-        path: /spec/source/helm/valuesObject/service/ports/-
-        value:
-          name: tcp-minecraft
-          port: 25565
-          targetPort: 25565
   # Must match region in the out-of-band karpenter-provider-proxmox secret.
   - target:
       kind: ProxmoxNodeClass

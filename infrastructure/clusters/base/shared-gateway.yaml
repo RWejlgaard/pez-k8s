@@ -4,12 +4,12 @@ metadata:
   name: shared-gateway
   namespace: istio-system
   annotations:
-    # Must sync after istiod (wave 1, needed for TCP listener support) and
-    # istio-ingressgateway (wave 4, needed for the Service's ports incl.
-    # 25565). Argo gates each wave on the previous one's health, and a Gateway
-    # counts healthy only once its listeners are Programmed - so if this ever
-    # syncs at/before those waves, an unready listener (e.g. a new TCP one)
-    # can permanently block the whole app-of-apps sync.
+    # Must sync after istiod (wave 1, which programs this Gateway) and
+    # istio-ingressgateway (wave 4, which owns the Service this binds to via
+    # `addresses`). Argo gates each wave on the previous one's health, and a
+    # Gateway counts healthy only once its listeners are Programmed - so if
+    # this ever syncs at/before those waves, an unready listener can
+    # permanently block the whole app-of-apps sync.
     argocd.argoproj.io/sync-wave: "6"
 spec:
   gatewayClassName: istio
