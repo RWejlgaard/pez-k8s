@@ -11,3 +11,4 @@ resources:
 patches:
   - path: cmd-params-patch.yaml
   - path: metrics-annotations-patch.yaml
+  - path: resources-patch.yaml
