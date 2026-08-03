@@ -1,0 +1,165 @@
+# Upstream's install.yaml ships no resource requests at all, which leaves every
+# ArgoCD pod BestEffort - first in line for the OOM killer under node pressure,
+# and invisible to Karpenter, which bin-packs and enforces the NodePool ceiling
+# against requests. Same right-sizing exercise as infrastructure/istio/istiod.yaml
+# and sealed-secrets.yaml, aimed at the 1-vCPU / 2Gi worker nodes.
+#
+# Requests are sized for what these actually use on two small homelab clusters
+# (~11 Applications each); limits leave headroom for the bursty work - the
+# controller reconciling after a cache rebuild, repo-server rendering the
+# gateway-api CRD manifest (1.1MB) and templating Helm charts.
+# Total requests: 230m CPU / 704Mi memory.
+
+# Heaviest component: holds the cluster cache and reconciles every Application.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: argocd-application-controller
+spec:
+  template:
+    spec:
+      containers:
+        - name: argocd-application-controller
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+---
+# Bursty: forks kustomize/helm per manifest render, idles near nothing between.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: copyutil
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      containers:
+        - name: argocd-repo-server
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+# API + UI. Load is one operator hitting it occasionally.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-server
+spec:
+  template:
+    spec:
+      containers:
+        - name: argocd-server
+          resources:
+            requests:
+              cpu: 25m
+              memory: 96Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+---
+# Cache only, no persistence - sized to be cheap rather than to survive.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-redis
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: secret-init
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      containers:
+        - name: redis
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+# Only drives the ApplicationSets in pez-k8s-apps, so it is mostly idle.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-applicationset-controller
+spec:
+  template:
+    spec:
+      containers:
+        - name: argocd-applicationset-controller
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+---
+# Currently unconfigured (no triggers in argocd-notifications-cm), so this is
+# effectively a floor until it has something to send.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-notifications-controller
+spec:
+  template:
+    spec:
+      containers:
+        - name: argocd-notifications-controller
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+---
+# No SSO configured, so dex serves nothing - smallest allocation in the set.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-dex-server
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: copyutil
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+      containers:
+        - name: dex
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
