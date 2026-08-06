@@ -36,6 +36,10 @@ stringData:
         ssh_authorized_keys:{{- range (split . ",") }}
           - {{ . }}{{- end }}{{- end }}
 
+    package_update: true
+    packages:
+      - qemu-guest-agent
+
     write_files:
       - path: /usr/local/bin/join-k3s.sh
         permissions: '0755'
